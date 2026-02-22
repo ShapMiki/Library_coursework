@@ -3,7 +3,7 @@ my_notes/
 myvenv/
 venv/
 .env
-
+.idea/
 
 
 # Byte-compiled / optimized / DLL files
