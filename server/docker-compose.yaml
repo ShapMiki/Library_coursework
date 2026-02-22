@@ -1,0 +1,47 @@
+services:
+  PostgresDB:
+    image: postgres:17
+    container_name: my_postgres_db
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    env_file:
+      - .env
+
+    ports:
+      - "5432:5432"
+
+  Server:
+    image: library
+    restart: always
+    build:
+      context: .
+
+    container_name: CryproAppServer
+
+    command: bash -c "alembic upgrade head && \
+            echo 'wait PostgreSQL... 3 sec' && \
+            sleep 3 && \
+            uvicorn main:app --host  0.0.0.0 --port 80 --reload"
+
+    env_file:
+      - .env
+
+    ports:
+      - "3334:80"
+      - "8000:80"
+      - "4444:80"
+      - "80:80"
+
+    depends_on:
+      - PostgresDB
+
+
+volumes:
+  postgres_data:
