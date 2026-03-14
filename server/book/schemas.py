@@ -12,3 +12,7 @@ class SBook(BaseModel):
 
     class Config:
         orm_mode = True
+
+class SBookDataSet(BaseModel):
+    book_data: Optional[list] = None
+
