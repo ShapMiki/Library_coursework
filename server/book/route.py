@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("/status")
 async def root():
     return {"status": 200, "details": "user api work"}
 
@@ -27,12 +27,16 @@ async def edit_books(data: SBookDataSet):
         await BookDAO.update_one(book)
 
 
-@router.get("/books")
-async def get_book():
-    books = await BookDAO.find_all()
-    return books
+@router.get("/{{book_id}}")
+async def get_book(book_id: int):
+    if not book_id:
+        books = await BookDAO.find_all()
+        return books
+    else:
+        book = await BookDAO.find_by_id(book_id)
+        return book
 
-@router.post("/book")
+@router.post("/")
 async def create_book(book: SBook):
     book = await BookDAO.add_one(book)
     return book

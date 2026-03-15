@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Вход</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter, sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#fffdf6;
+color:#5c4a1a;
+}
+
+.card{
+width:380px;
+background:#fff8e6;
+padding:40px;
+border-radius:16px;
+box-shadow:0 8px 28px rgba(180,140,40,0.15);
+}
+
+h1{
+text-align:center;
+margin-bottom:28px;
+font-weight:600;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:16px;
+border-radius:10px;
+border:1px solid #f6d88c;
+background:white;
+font-size:14px;
+}
+
+input:focus{
+outline:none;
+border-color:#f2c94c;
+box-shadow:0 0 6px rgba(242,201,76,0.4);
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#f6d88c;
+color:#5c4a1a;
+font-weight:600;
+cursor:pointer;
+transition:all 0.25s;
+}
+
+button:hover{
+background:#f2c94c;
+box-shadow:0 8px 20px rgba(240,180,40,0.35);
+transform:translateY(-2px);
+}
+
+.link{
+text-align:center;
+margin-top:16px;
+font-size:14px;
+}
+
+.link a{
+color:#b8891e;
+text-decoration:none;
+font-weight:500;
+}
+
+.link a:hover{
+text-decoration:underline;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Вход</h1>
+
+<form id="loginForm">
+
+<input
+name="user_login"
+placeholder="Email или Username"
+required
+>
+
+<input
+type="password"
+name="password"
+placeholder="Пароль"
+required
+>
+
+<button type="submit">
+Войти
+</button>
+
+</form>
+
+<div class="link">
+Нет аккаунта? <a href="/page/registration">Регистрация</a>
+</div>
+
+</div>
+
+<script>
+
+document.getElementById("loginForm").addEventListener("submit", async e => {
+
+e.preventDefault()
+
+const form = new FormData(e.target)
+
+const data = {
+user_login: form.get("user_login"),
+password: form.get("password")
+}
+
+const res = await fetch("/api/user/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(data)
+})
+
+if(res.ok){
+window.location="/page"
+}else{
+alert("Ошибка входа")
+}
+
+})
+
+</script>
+
+</body>
+</html>

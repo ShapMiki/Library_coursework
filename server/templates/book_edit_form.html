@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Редактирование книги</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#fffdf6,#fff8e6);
+color:#5c4a1a;
+min-height:100vh;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 60px;
+}
+
+.logo{
+font-size:22px;
+font-weight:600;
+color:#b8891e;
+}
+
+main{
+display:flex;
+justify-content:center;
+padding:40px;
+}
+
+.form-card{
+width:460px;
+background:white;
+padding:30px;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.form-title{
+font-size:20px;
+font-weight:600;
+margin-bottom:20px;
+color:#b8891e;
+}
+
+.form-group{
+margin-bottom:16px;
+}
+
+.form-group label{
+display:block;
+font-size:14px;
+margin-bottom:6px;
+}
+
+.form-group input,
+.form-group textarea{
+width:100%;
+padding:10px 12px;
+border-radius:10px;
+border:1px solid #f2dca0;
+}
+
+.dynamic-field{
+display:flex;
+gap:10px;
+margin-bottom:10px;
+}
+
+.dynamic-field input{
+flex:1;
+}
+
+.add-field{
+margin-top:10px;
+background:#fff4cc;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#f2c94c;
+color:#5c4a1a;
+font-weight:600;
+cursor:pointer;
+margin-top:10px;
+}
+
+button:hover{
+background:#f0b428;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+📚 Library Registry
+</div>
+
+<div>
+<a href="/">← Назад</a>
+</div>
+
+</header>
+
+<main>
+
+<div class="form-card">
+
+<div class="form-title">
+Редактировать книгу
+</div>
+
+<form id="editForm">
+
+<input type="hidden" id="book_id" value="{{ data.book.id }}">
+
+<div class="form-group">
+<label>Название</label>
+<input type="text" id="title" value="{{ data.book.title }}">
+</div>
+
+<div class="form-group">
+<label>Описание</label>
+<textarea id="description">{{ data.book.description }}</textarea>
+</div>
+
+<div class="form-group">
+<label>ID автора</label>
+<input type="number" id="author_id" value="{{ data.book.author_id }}">
+</div>
+
+<div class="form-group">
+<label>ID жанра</label>
+<input type="number" id="genre_id" value="{{ data.book.genre_id }}">
+</div>
+
+<div class="form-group">
+<label>Дополнительные поля</label>
+
+<div id="extraFields">
+
+{% if data.book.extra_data %}
+{% for key, value in data.book.extra_data.items() %}
+
+<div class="dynamic-field">
+<input class="field-name" value="{{key}}" placeholder="Название поля">
+<input class="field-value" value="{{value}}" placeholder="Значение">
+</div>
+
+{% endfor %}
+{% endif %}
+
+</div>
+
+<button type="button" class="add-field" onclick="addField()">
++ Добавить поле
+</button>
+
+</div>
+
+<button type="submit">
+Сохранить
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+<script>
+
+function addField(){
+
+const container = document.getElementById("extraFields")
+
+const div = document.createElement("div")
+div.classList.add("dynamic-field")
+
+div.innerHTML = `
+<input class="field-name" placeholder="Название поля">
+<input class="field-value" placeholder="Значение">
+`
+
+container.appendChild(div)
+
+}
+
+function collectExtra(){
+
+const names = document.querySelectorAll(".field-name")
+const values = document.querySelectorAll(".field-value")
+
+let extra = {}
+
+for(let i=0;i<names.length;i++){
+
+const key = names[i].value
+const value = values[i].value
+
+if(key){
+extra[key] = value
+}
+
+}
+
+return extra
+}
+
+document.getElementById("editForm").addEventListener("submit", async function(e){
+
+e.preventDefault()
+
+const book = {
+id: document.getElementById("book_id").value,
+title: document.getElementById("title").value,
+description: document.getElementById("description").value,
+author_id: document.getElementById("author_id").value || null,
+genre_id: document.getElementById("genre_id").value || null,
+extra_data: collectExtra()
+}
+
+const response = await fetch("/api/book/edit",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+book_data:[book]
+})
+})
+
+if(response.ok){
+window.location.href="/"
+}else{
+alert("Ошибка обновления")
+}
+
+})
+
+</script>
+
+</body>
+</html>

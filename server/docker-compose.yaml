@@ -23,11 +23,11 @@ services:
     build:
       context: .
 
-    container_name: CryproAppServer
+    container_name: libraryServer
 
     command: bash -c "alembic upgrade head && \
-            echo 'wait PostgreSQL... 3 sec' && \
-            sleep 3 && \
+            echo 'wait PostgreSQL... 1 sec' && \
+            sleep 1 && \
             uvicorn main:app --host  0.0.0.0 --port 80 --reload"
 
     env_file:

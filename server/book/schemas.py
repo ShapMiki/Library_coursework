@@ -9,6 +9,7 @@ class SBook(BaseModel):
     description: str
     author_id: Optional[int] = None
     genre_id: Optional[int] = None
+    extra_data: Optional[dict] = None
 
     class Config:
         orm_mode = True

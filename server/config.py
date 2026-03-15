@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
     DATABASE_URL: Optional[str] = None
+    secret_key_for_jwt: str
+    algorithm_for_jwt: str
 
     @model_validator(mode="before")
     @classmethod
