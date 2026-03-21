@@ -29,13 +29,14 @@ class Book(Base):
     )
 
     def to_dict(self):
+
         return {
             "id": self.id,
             "title": self.title,
             "description": self.description,
             "author_id": self.author_id,
             "genre_id": self.genre_id,
-            "author": self.author.name,
-            "genre": self.genre.name,
+            "author": self.author.name if self.author else "Нет автора",
+            "genre": self.genre.name if self.genre else "Нет жанра",
             "extra_data": self.extra_data or {}
         }

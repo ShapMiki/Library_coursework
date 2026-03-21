@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, Response, status, Depends
 
-
+from author.schemas import SAuthor
+from author.dao import AuthorDAO
 
 router = APIRouter(
     prefix="/author",
@@ -8,6 +9,8 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-async def root():
-    return {"status": 200, "details": "user api work"}
+@router.post("/")
+async def create_author(author: SAuthor):
+    # Используем созданный DAO для записи в базу
+    new_author = await AuthorDAO.add_one(author)
+    return new_author

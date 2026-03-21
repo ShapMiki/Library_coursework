@@ -1,166 +1,137 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Каталог книг</title>
+    <meta charset="UTF-8">
+    <title>Библиотека — Каталог</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #fffdf6, #fff8e6); color: #5c4a1a; min-height: 100vh; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 60px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-size: 22px; font-weight: 600; color: #b8891e; text-decoration: none; }
+        main { padding: 40px 60px; max-width: 1200px; margin: 0 auto; }
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        /* Панель фильтров */
+        .filter-panel { background: white; padding: 20px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .filter-form { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
+        .filter-group.short { flex-grow: 0; min-width: 200px; }
+        .filter-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #9a874f; }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+        .filter-form input, .filter-form select {
+            padding: 10px 14px; border-radius: 10px; border: 1px solid #f2dca0; background: #fffcf5; font-size: 14px; outline: none;
+        }
+        .filter-form input:focus { border-color: #b8891e; }
 
-<style>
+        .btn-submit { background: #b8891e; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-submit:hover { background: #966d15; }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter, sans-serif;
-}
-
-body{
-background:linear-gradient(135deg,#fffdf6,#fff8e6);
-color:#5c4a1a;
-min-height:100vh;
-}
-
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:25px 60px;
-}
-
-.logo{
-font-size:22px;
-font-weight:600;
-color:#b8891e;
-}
-
-.search-box{
-width:300px;
-}
-
-.search-box input{
-width:100%;
-padding:10px 14px;
-border-radius:10px;
-border:1px solid #f2dca0;
-background:white;
-}
-
-.search-box input:focus{
-outline:none;
-border-color:#f2c94c;
-box-shadow:0 0 6px rgba(240,180,40,0.3);
-}
-
-.profile{
-font-size:14px;
-}
-
-main{
-padding:40px 60px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-gap:30px;
-}
-
-.book-card{
-background:white;
-border-radius:16px;
-padding:20px;
-box-shadow:0 6px 20px rgba(0,0,0,0.05);
-transition:all 0.25s;
-}
-
-.book-card:hover{
-transform:translateY(-5px);
-box-shadow:0 12px 28px rgba(240,180,40,0.25);
-}
-
-.book-cover{
-height:180px;
-background:#fff4cc;
-border-radius:10px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:40px;
-margin-bottom:15px;
-}
-
-.book-title{
-font-weight:600;
-margin-bottom:6px;
-}
-
-.book-author{
-font-size:14px;
-color:#8b6a1a;
-margin-bottom:10px;
-}
-
-.book-year{
-font-size:13px;
-color:#9a874f;
-}
-
-</style>
+        /* Сетка */
+        #book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .book-card { background: white; border-radius: 18px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); transition: 0.3s; height: 100%; border: 1px solid transparent; }
+        .book-card:hover { transform: translateY(-5px); border-color: #f2dca0; box-shadow: 0 10px 25px rgba(184, 137, 30, 0.1); }
+        .book-cover { height: 160px; background: #fef9e7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 12px; }
+        .book-title { font-weight: 600; font-size: 16px; margin-bottom: 5px; }
+        .book-author { font-size: 13px; color: #8b6a1a; margin-bottom: 10px; }
+        .book-genre { font-size: 11px; color: #b8891e; background: #fff4cc; padding: 3px 8px; border-radius: 5px; display: inline-block; }
+    </style>
 </head>
-
 <body>
 
 <header>
-
-<div class="logo">
-📚 Library Registry
-</div>
-
-<div class="search-box">
-    <input type="text" placeholder="Поиск книг...">
+    <a href="/" class="logo">📚 Library</a>
+    <div style="display: flex">
+        <a href="/page/book/form" style="margin-right:20px; color: #b8891e; text-decoration: none; font-size: 14px; font-weight: 500;">✚ Добавить книгу</a>
+        <a href="/page/author/form" style="margin-right:20px;  color: #b8891e; text-decoration: none; font-size: 14px; font-weight: 500;">✚ Добавить Автора</a>
+        <a href="/page/genre/form" style="margin-right:20px;  color: #b8891e; text-decoration: none; font-size: 14px; font-weight: 500;">✚ Добавить Жанр</a>
     </div>
-
-    <div class="profile">
-        <a href="/page/book/form">Добавить книгу</a>
-    Профиль
-    </div>
-
 </header>
 
 <main>
+    <section class="filter-panel">
+        <form id="filter-form" class="filter-form">
+            <div class="filter-group">
+                <label>Поиск по названию</label>
+                <input type="text" name="title" placeholder="Начните печатать...">
+            </div>
 
-<div class="grid">
+            <div class="filter-group short">
+                <label>Сортировать</label>
+                <select name="sort_combined">
+                    <option value="title:asc">Название (А-Я)</option>
+                    <option value="title:desc">Название (Я-А)</option>
+                    <option value="id:desc">Сначала новые</option>
+                    <option value="id:asc">Сначала старые</option>
+                </select>
+            </div>
 
-{% for book in data.books %}
+            <button type="submit" class="btn-submit">Найти</button>
+        </form>
+    </section>
 
-<a href="/page/book/form/{{book.id}}"><div class="book-card">
-
-    <div class="book-cover">
-        📖
-    </div>
-
-    <div class="book-title">
-        {{ book.title }}
-    </div>
-
-    <div class="book-author">
-        {{ book.author }}
-    </div>
-
-    <div class="book-year">
-        {{ book.genre }}
-    </div>
-
-</div></a>
-
-{% endfor %}
-</div>
-
-
+    <div id="book-grid">
+        </div>
 </main>
+
+<script>
+    const filterForm = document.getElementById('filter-form');
+    const bookGrid = document.getElementById('book-grid');
+
+    async function fetchBooks() {
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams();
+
+        // 1. Обрабатываем название
+        const title = formData.get('title');
+        if (title) params.append('title', title);
+
+        // 2. "Распиливаем" сортировку (title:asc -> sort_by=title, order=asc)
+        const sortValue = formData.get('sort_combined');
+        const [sortBy, order] = sortValue.split(':');
+        params.append('sort_by', sortBy);
+        params.append('order', order);
+
+        try {
+            const response = await fetch(`/api/book/all?${params.toString()}`);
+            const data = await response.json();
+            renderBooks(data.books);
+        } catch (e) {
+            bookGrid.innerHTML = '<p>Ошибка связи с сервером</p>';
+        }
+    }
+
+    function renderBooks(books) {
+        bookGrid.innerHTML = '';
+        if (!books.length) {
+            bookGrid.innerHTML = '<p>Ничего не нашлось по вашему запросу.</p>';
+            return;
+        }
+
+        books.forEach(book => {
+            const html = `
+                <a href="/page/book/form/${book.id}" style="text-decoration: none; color: inherit;">
+                    <article class="book-card">
+                        <div class="book-cover">📖</div>
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${book.author || 'Автор не указан'}</div>
+                        <div class="book-genre">${book.genre || 'Общее'}</div>
+                    </article>
+                </a>
+            `;
+            bookGrid.insertAdjacentHTML('beforeend', html);
+        });
+    }
+
+    // Поиск срабатывает при нажатии кнопки
+    filterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        fetchBooks();
+    });
+
+    // Загрузка при старте
+    fetchBooks();
+</script>
 
 </body>
 </html>

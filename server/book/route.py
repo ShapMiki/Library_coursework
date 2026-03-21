@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request, Response, status, Depends
+from typing import Optional, Union
 
 from book.schemas import *
 from book.dao import BookDAO
@@ -41,3 +42,27 @@ async def create_book(book: SBook):
     book = await BookDAO.add_one(book)
     return book
 
+@router.get("/all")
+async def get_all_books(
+    title: Optional[str] = None,
+    genre_id: Optional[Union[int, str]] = None,
+    sort_by: str = "title",
+    order: str = "asc"
+):
+    # Чистим genre_id как раньше
+    safe_genre_id = int(genre_id) if genre_id and str(genre_id).isdigit() else None
+
+    books = await BookDAO.find_filtered(
+        title=title,
+        genre_id=safe_genre_id,
+        sort_by=sort_by,
+        order=order
+    )
+    return {"books": books}
+
+@router.delete("/{book_id}")
+async def delete_book(book_id: int):
+    result = await BookDAO.delete_by_id(book_id)
+    if result:
+        return {"status": "success", "message": f"Книга {book_id} удалена"}
+    return {"status": "error", "message": "Книга не найдена"}

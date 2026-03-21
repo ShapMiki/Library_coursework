@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Request, Response, status, Depends
 
+from genre.dao import GenreDAO
+from genre.schemas import SGenre
+
 
 
 router = APIRouter(
@@ -8,6 +11,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-async def root():
-    return {"status": 200, "details": "user api work"}
+@router.post("/")
+async def create_genre(genre: SGenre):
+    new_genre = await GenreDAO.add_one(genre)
+    return new_genre

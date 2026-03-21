@@ -75,3 +75,12 @@ async def books_edit_page(request: Request, user=Depends(get_current_user)):
             }
         }
     )
+
+@router.get("/author/form")
+async def book_form(request: Request, user=Depends(get_current_user)):
+    return templates.TemplateResponse("author_form.html", {"request": request})
+
+@router.get("/genre/form")
+async def book_form(request: Request, user=Depends(get_current_user)):
+    return templates.TemplateResponse("genre_form.html", {"request": request})
+
