@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy import String, ForeignKey, JSON
+from sqlalchemy import String, ForeignKey, JSON, Computed, cast
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
@@ -22,6 +22,10 @@ class Book(Base):
 
     extra_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 
+    code: Mapped[str] = mapped_column(
+        String(250),
+        Computed(cast(id, String) + "-" + title)
+    )
     fans = relationship(
         "User",
         secondary="favorite_books",
@@ -38,5 +42,6 @@ class Book(Base):
             "genre_id": self.genre_id,
             "author": self.author.name if self.author else "Нет автора",
             "genre": self.genre.name if self.genre else "Нет жанра",
-            "extra_data": self.extra_data or {}
+            "extra_data": self.extra_data or {},
+            "code": self.code
         }
