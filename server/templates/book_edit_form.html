@@ -1,264 +1,187 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Редактирование книги</title>
+    <meta charset="UTF-8">
+    <title>Редактирование книги</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #fffdf6, #fff8e6); color: #5c4a1a; min-height: 100vh; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 60px; }
+        .logo { font-size: 22px; font-weight: 600; color: #b8891e; }
+        main { display: flex; justify-content: center; padding: 40px; }
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        .form-card { width: 460px; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+        /* Навигация между записями */
+        .record-nav { display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px; }
+        .btn-nav {
+            flex: 1; padding: 8px; background: #fffcf5; border: 1px solid #f2dca0;
+            border-radius: 8px; color: #8b6a1a; cursor: pointer; font-size: 13px; font-weight: 500;
+        }
+        .btn-nav:hover { background: #fef9e7; border-color: #b8891e; }
 
-<style>
+        .form-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #b8891e; text-align: center; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 6px; font-weight: 500; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #f2dca0; outline: none; }
+        .form-group input:focus { border-color: #b8891e; }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter,sans-serif;
-}
+        .dynamic-field { display: flex; gap: 10px; margin-bottom: 10px; }
+        .dynamic-field input { flex: 1; }
+        .add-field { margin-top: 5px; background: #fff4cc; border: 1px dashed #b8891e; padding: 8px; cursor: pointer; width: 100%; border-radius: 10px; color: #5c4a1a; }
 
-body{
-background:linear-gradient(135deg,#fffdf6,#fff8e6);
-color:#5c4a1a;
-min-height:100vh;
-}
+        .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        button[type="submit"] { width: 100%; padding: 12px; border: none; border-radius: 10px; background: #f2c94c; color: #5c4a1a; font-weight: 600; cursor: pointer; }
+        button[type="submit"]:hover { background: #f0b428; }
 
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:25px 60px;
-}
+        .btn-delete { background: #fff0f0; color: #d9534f; border: 1px solid #f5c6cb; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; }
+        .btn-delete:hover { background: #f8d7da; }
 
-.logo{
-font-size:22px;
-font-weight:600;
-color:#b8891e;
-}
-
-main{
-display:flex;
-justify-content:center;
-padding:40px;
-}
-
-.form-card{
-width:460px;
-background:white;
-padding:30px;
-border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
-
-.form-title{
-font-size:20px;
-font-weight:600;
-margin-bottom:20px;
-color:#b8891e;
-}
-
-.form-group{
-margin-bottom:16px;
-}
-
-.form-group label{
-display:block;
-font-size:14px;
-margin-bottom:6px;
-}
-
-.form-group input,
-.form-group textarea{
-width:100%;
-padding:10px 12px;
-border-radius:10px;
-border:1px solid #f2dca0;
-}
-
-.dynamic-field{
-display:flex;
-gap:10px;
-margin-bottom:10px;
-}
-
-.dynamic-field input{
-flex:1;
-}
-
-.add-field{
-margin-top:10px;
-background:#fff4cc;
-}
-
-button{
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-background:#f2c94c;
-color:#5c4a1a;
-font-weight:600;
-cursor:pointer;
-margin-top:10px;
-}
-
-button:hover{
-background:#f0b428;
-}
-
-</style>
+        a.back-link { text-decoration: none; color: #b8891e; font-weight: 500; }
+    </style>
 </head>
-
 <body>
 
 <header>
-
-<div class="logo">
-📚 Library Registry
-</div>
-
-<div>
-<a href="/">← Назад</a>
-</div>
-
+    <div class="logo">📚 Library Registry</div>
+    <div><a href="/" class="back-link">← На главную</a></div>
 </header>
 
 <main>
+    <div class="form-card">
+        <div class="record-nav">
+            <button class="btn-nav" onclick="navigateRecord(-1)">← Пред.</button>
+            <button class="btn-nav" onclick="navigateRecord(1)">След. →</button>
+        </div>
 
-<div class="form-card">
+        <div class="form-title">Редактировать книгу</div>
 
-<div class="form-title">
-Редактировать книгу
-</div>
+        <form id="editForm">
+            <input type="hidden" id="book_id" value="{{ data.book.id }}">
 
-<form id="editForm">
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" id="title" value="{{ data.book.title }}" required>
+            </div>
 
-<input type="hidden" id="book_id" value="{{ data.book.id }}">
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea id="description" rows="3">{{ data.book.description }}</textarea>
+            </div>
 
-<div class="form-group">
-<label>Название</label>
-<input type="text" id="title" value="{{ data.book.title }}">
-</div>
+            <div class="form-group">
+                <label>ID автора</label>
+                <input type="number" id="author_id" value="{{ data.book.author_id }}">
+            </div>
 
-<div class="form-group">
-<label>Описание</label>
-<textarea id="description">{{ data.book.description }}</textarea>
-</div>
+            <div class="form-group">
+                <label>ID жанра</label>
+                <input type="number" id="genre_id" value="{{ data.book.genre_id }}">
+            </div>
 
-<div class="form-group">
-<label>ID автора</label>
-<input type="number" id="author_id" value="{{ data.book.author_id }}">
-</div>
+            <div class="form-group">
+                <label>Дополнительные поля</label>
+                <div id="extraFields">
+                    {% if data.book.extra_data %}
+                        {% for key, value in data.book.extra_data.items() %}
+                        <div class="dynamic-field">
+                            <input class="field-name" value="{{key}}" placeholder="Название">
+                            <input class="field-value" value="{{value}}" placeholder="Значение">
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <button type="button" class="add-field" onclick="addField()">+ Добавить поле</button>
+            </div>
 
-<div class="form-group">
-<label>ID жанра</label>
-<input type="number" id="genre_id" value="{{ data.book.genre_id }}">
-</div>
-
-<div class="form-group">
-<label>Дополнительные поля</label>
-
-<div id="extraFields">
-
-{% if data.book.extra_data %}
-{% for key, value in data.book.extra_data.items() %}
-
-<div class="dynamic-field">
-<input class="field-name" value="{{key}}" placeholder="Название поля">
-<input class="field-value" value="{{value}}" placeholder="Значение">
-</div>
-
-{% endfor %}
-{% endif %}
-
-</div>
-
-<button type="button" class="add-field" onclick="addField()">
-+ Добавить поле
-</button>
-
-</div>
-
-<button type="submit">
-Сохранить
-</button>
-
-</form>
-
-</div>
-
+            <div class="action-buttons">
+                <button type="submit">Сохранить изменения</button>
+                <button type="button" class="btn-delete" onclick="deleteBook()">Удалить книгу</button>
+            </div>
+        </form>
+    </div>
 </main>
 
 <script>
+    const currentId = parseInt(document.getElementById("book_id").value);
 
-function addField(){
+    // Навигация по ID
+    function navigateRecord(step) {
+        const nextId = currentId + step;
+        if (nextId > 0) {
+            window.location.href = `/page/book/form/${nextId}`;
+        }
+    }
 
-const container = document.getElementById("extraFields")
+    // Удаление книги
+    async function deleteBook() {
+        if (!confirm("Вы уверены, что хотите безвозвратно удалить эту книгу?")) return;
 
-const div = document.createElement("div")
-div.classList.add("dynamic-field")
+        try {
+            const response = await fetch(`/api/book/${currentId}`, {
+                method: "DELETE"
+            });
+            const result = await response.json();
 
-div.innerHTML = `
-<input class="field-name" placeholder="Название поля">
-<input class="field-value" placeholder="Значение">
-`
+            if (response.ok) {
+                alert("Книга успешно удалена");
+                window.location.href = "/";
+            } else {
+                alert("Ошибка: " + result.message);
+            }
+        } catch (e) {
+            alert("Ошибка связи с сервером");
+        }
+    }
 
-container.appendChild(div)
+    function addField(){
+        const container = document.getElementById("extraFields");
+        const div = document.createElement("div");
+        div.classList.add("dynamic-field");
+        div.innerHTML = `
+            <input class="field-name" placeholder="Название поля">
+            <input class="field-value" placeholder="Значение">
+        `;
+        container.appendChild(div);
+    }
 
-}
+    function collectExtra(){
+        const names = document.querySelectorAll(".field-name");
+        const values = document.querySelectorAll(".field-value");
+        let extra = {};
+        for(let i=0; i<names.length; i++){
+            const key = names[i].value.trim();
+            const value = values[i].value.trim();
+            if(key) extra[key] = value;
+        }
+        return extra;
+    }
 
-function collectExtra(){
+    document.getElementById("editForm").addEventListener("submit", async function(e){
+        e.preventDefault();
+        const book = {
+            id: currentId,
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value,
+            author_id: parseInt(document.getElementById("author_id").value) || null,
+            genre_id: parseInt(document.getElementById("genre_id").value) || null,
+            extra_data: collectExtra()
+        };
 
-const names = document.querySelectorAll(".field-name")
-const values = document.querySelectorAll(".field-value")
+        const response = await fetch("/api/book/edit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ book_data: [book] })
+        });
 
-let extra = {}
-
-for(let i=0;i<names.length;i++){
-
-const key = names[i].value
-const value = values[i].value
-
-if(key){
-extra[key] = value
-}
-
-}
-
-return extra
-}
-
-document.getElementById("editForm").addEventListener("submit", async function(e){
-
-e.preventDefault()
-
-const book = {
-id: document.getElementById("book_id").value,
-title: document.getElementById("title").value,
-description: document.getElementById("description").value,
-author_id: document.getElementById("author_id").value || null,
-genre_id: document.getElementById("genre_id").value || null,
-extra_data: collectExtra()
-}
-
-const response = await fetch("/api/book/edit",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-book_data:[book]
-})
-})
-
-if(response.ok){
-window.location.href="/"
-}else{
-alert("Ошибка обновления")
-}
-
-})
-
+        if(response.ok) {
+            window.location.href = "/";
+        } else {
+            alert("Ошибка обновления");
+        }
+    });
 </script>
 
 </body>

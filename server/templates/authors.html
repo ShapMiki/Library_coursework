@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Библиотека — Авторы</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #fffdf6, #fff8e6); color: #5c4a1a; min-height: 100vh; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 60px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 22px; font-weight: 600; color: #b8891e; text-decoration: none; }
+
+        /* Бургер и Навигация */
+        .nav-container { display: flex; align-items: center; gap: 20px; }
+        .nav-link { color: #b8891e; text-decoration: none; font-size: 14px; font-weight: 500; }
+
+        .burger-menu { cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px; }
+        .burger-menu span { display: block; width: 25px; height: 3px; background: #b8891e; border-radius: 3px; }
+
+        /* Сайдбар (Визард как на скриншоте) */
+        .side-wizard {
+            position: fixed; top: 0; right: -300px; width: 300px; height: 100%;
+            background: #f4f4f4; box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 1000; transition: 0.4s; padding: 60px 20px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .side-wizard.active { right: 0; }
+        .close-wizard { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; }
+
+        .wizard-btn {
+            display: block; width: 100%; padding: 12px; text-align: center;
+            text-decoration: none; color: #333; font-size: 15px;
+            background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 100%);
+            border: 1px solid #ababab; border-radius: 4px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+        .wizard-btn:hover { background: linear-gradient(to bottom, #f9f9f9 0%, #dcdcdc 100%); }
+
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); display: none; z-index: 999; }
+        .overlay.active { display: block; }
+
+        /* Основной контент */
+        main { padding: 40px 60px; max-width: 1200px; margin: 0 auto; }
+
+        .filter-panel {
+            background: white; padding: 20px; border-radius: 16px;
+            margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .search-input {
+            width: 100%; padding: 12px 18px; border-radius: 12px;
+            border: 1px solid #f2dca0; background: #fffcf5; outline: none;
+        }
+
+        /* Сетка авторов */
+        .author-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+        .author-card {
+            background: white; border-radius: 20px; padding: 25px;
+            text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            transition: 0.3s; border: 1px solid transparent; text-decoration: none; color: inherit;
+        }
+        .author-card:hover {
+            transform: translateY(-5px); border-color: #f2dca0;
+            box-shadow: 0 10px 25px rgba(184, 137, 30, 0.1);
+        }
+        .author-avatar {
+            width: 80px; height: 80px; background: #fef9e7;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 32px; margin: 0 auto 15px;
+        }
+        .author-name { font-weight: 600; font-size: 18px; color: #5c4a1a; }
+        .author-meta { font-size: 12px; color: #b8891e; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">📚 Library</a>
+    <div class="nav-container">
+        <a href="/page/author/form" class="nav-link">✚ Добавить Автора</a>
+        <div class="burger-menu" id="burger-toggle">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<div class="side-wizard" id="side-wizard">
+    <div class="close-wizard" id="close-wizard">&times;</div>
+    <a href="/page/books" class="wizard-btn">Книги</a>
+    <a href="/page/authors" class="wizard-btn">Авторы</a>
+    <a href="/page/genres" class="wizard-btn">Жанры</a>
+</div>
+
+<main>
+    <section class="filter-panel">
+        <input type="text" id="author-search" class="search-input" placeholder="Поиск автора по имени...">
+    </section>
+
+    <div class="author-grid" id="author-grid">
+        {% for author in data.authors %}
+        <a href="/page/author/{{ author.id }}" class="author-card">
+            <div class="author-avatar">✍️</div>
+            <div class="author-name">{{ author.name }}</div>
+            <div class="author-meta">Автор</div>
+        </a>
+        {% endfor %}
+    </div>
+</main>
+
+<script>
+    // Логика меню (Визард)
+    const burger = document.getElementById('burger-toggle');
+    const wizard = document.getElementById('side-wizard');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('close-wizard');
+
+    const toggleWizard = () => {
+        wizard.classList.toggle('active');
+        overlay.classList.toggle('active');
+    };
+
+    burger.onclick = toggleWizard;
+    closeBtn.onclick = toggleWizard;
+    overlay.onclick = toggleWizard;
+
+    // Простой живой поиск по имеющейся сетке
+    const searchInput = document.getElementById('author-search');
+    const cards = document.querySelectorAll('.author-card');
+
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        cards.forEach(card => {
+            const name = card.querySelector('.author-name').textContent.toLowerCase();
+            card.style.display = name.includes(term) ? 'block' : 'none';
+        });
+    });
+</script>
+
+</body>
+</html>

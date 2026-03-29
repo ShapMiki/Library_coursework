@@ -5,6 +5,9 @@ from fastapi.templating import Jinja2Templates
 from user.dependencies import get_current_user
 
 from book.dao import BookDAO
+from author.dao import AuthorDAO
+from genre.dao import GenreDAO
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -31,13 +34,6 @@ async def login(request: Request):
 
 @router.get("/books")
 async def books_page(request: Request, user=Depends(get_current_user)):
-
-    books = [
-        {"title": "1984", "author": "George Orwell", "year": 1949},
-        {"title": "Dune", "author": "Frank Herbert", "year": 1965},
-        {"title": "Foundation", "author": "Isaac Asimov", "year": 1951},
-    ]
-
     books = await BookDAO.find_all_full()
     data = {
         "books": books
@@ -45,6 +41,30 @@ async def books_page(request: Request, user=Depends(get_current_user)):
 
     return templates.TemplateResponse(
         "books.html",
+        {
+            "request": request,
+            "data": data
+        }
+    )
+
+@router.get("/authors")
+async def authors_page(request: Request, user=Depends(get_current_user)):
+    authors = await AuthorDAO.find_all()
+    data={"authors": authors}
+    return templates.TemplateResponse(
+        "authors.html",
+        {
+            "request": request,
+            "data": data
+        }
+    )
+
+@router.get("/genres")
+async def genres_page(request: Request, user=Depends(get_current_user)):
+    genres = await GenreDAO.find_all()
+    data={"genres": genres}
+    return templates.TemplateResponse(
+        "genres.html",
         {
             "request": request,
             "data": data
