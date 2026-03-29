@@ -9,180 +9,210 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: linear-gradient(135deg, #fffdf6, #fff8e6); color: #5c4a1a; min-height: 100vh; }
         header { display: flex; justify-content: space-between; align-items: center; padding: 25px 60px; }
-        .logo { font-size: 22px; font-weight: 600; color: #b8891e; }
-        main { display: flex; justify-content: center; padding: 40px; }
+        .logo { font-size: 22px; font-weight: 600; color: #b8891e; text-decoration: none; }
+        .back-link { text-decoration: none; color: #b8891e; font-size: 14px; font-weight: 500; }
+        main { display: flex; justify-content: center; padding: 20px 40px 40px 40px; }
+        .form-card { width: 500px; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 
-        .form-card { width: 460px; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-
-        /* Навигация между записями */
-        .record-nav { display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px; }
+        /* НАВИГАЦИЯ */
+        .record-nav { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 25px; }
         .btn-nav {
-            flex: 1; padding: 8px; background: #fffcf5; border: 1px solid #f2dca0;
-            border-radius: 8px; color: #8b6a1a; cursor: pointer; font-size: 13px; font-weight: 500;
+            flex: 1; padding: 12px 2px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+            color: #ccc; background: #f9f9f9; border: 1px solid #ddd; border-radius: 6px;
+            text-align: center; text-decoration: none; cursor: default; transition: all 0.2s;
         }
-        .btn-nav:hover { background: #fef9e7; border-color: #b8891e; }
+        .btn-nav.active {
+            color: #b8891e; background: #fff; border-color: #b8891e; cursor: pointer;
+        }
+        .btn-nav.active:hover { background: #b8891e; color: #fff; }
 
         .form-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #b8891e; text-align: center; }
         .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 14px; margin-bottom: 6px; font-weight: 500; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #f2dca0; outline: none; }
-        .form-group input:focus { border-color: #b8891e; }
-
-        .dynamic-field { display: flex; gap: 10px; margin-bottom: 10px; }
-        .dynamic-field input { flex: 1; }
-        .add-field { margin-top: 5px; background: #fff4cc; border: 1px dashed #b8891e; padding: 8px; cursor: pointer; width: 100%; border-radius: 10px; color: #5c4a1a; }
-
-        .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        button[type="submit"] { width: 100%; padding: 12px; border: none; border-radius: 10px; background: #f2c94c; color: #5c4a1a; font-weight: 600; cursor: pointer; }
-        button[type="submit"]:hover { background: #f0b428; }
-
-        .btn-delete { background: #fff0f0; color: #d9534f; border: 1px solid #f5c6cb; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; }
-        .btn-delete:hover { background: #f8d7da; }
-
-        a.back-link { text-decoration: none; color: #b8891e; font-weight: 500; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #9a874f; margin-bottom: 6px; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 12px; border-radius: 10px;
+            border: 1px solid #f2dca0; background: #fffcf5; outline: none; font-size: 14px;
+        }
+        .dynamic-field { display: flex; gap: 8px; margin-bottom: 8px; }
+        .btn-remove { color: #d9534f; cursor: pointer; font-weight: bold; padding: 5px; }
+        .add-field { background: #fff4cc; border: 1px dashed #b8891e; padding: 10px; cursor: pointer; width: 100%; border-radius: 10px; color: #5c4a1a; margin-top: 5px; }
+        .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; }
+        .btn-save { background: #f2c94c; color: #5c4a1a; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .btn-delete { background: #fff0f0; color: #d9534f; border: 1px solid #f5c6cb; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">📚 Library Registry</div>
-    <div><a href="/" class="back-link">← На главную</a></div>
+    <a href="/" class="logo">📚 Library Registry</a>
+    <a href="/" class="back-link">← Назад к списку</a>
 </header>
 
 <main>
     <div class="form-card">
         <div class="record-nav">
-            <button class="btn-nav" onclick="navigateRecord(-1)">← Пред.</button>
-            <button class="btn-nav" onclick="navigateRecord(1)">След. →</button>
+            <a id="btn-first" class="btn-nav">« Первая</a>
+            <a id="btn-prev" class="btn-nav">‹ Пред.</a>
+            <a id="btn-next" class="btn-nav">След. ›</a>
+            <a id="btn-last" class="btn-nav">Последняя »</a>
         </div>
 
-        <div class="form-title">Редактировать книгу</div>
+        <div class="form-title">Редактировать книгу #{{ data.book.id }}</div>
 
         <form id="editForm">
-            <input type="hidden" id="book_id" value="{{ data.book.id }}">
+            <input type="hidden" id="book_id_input" value="{{ data.book.id }}">
 
-            <div class="form-group">
-                <label>Название</label>
-                <input type="text" id="title" value="{{ data.book.title }}" required>
+            <div class="form-group"><label>Название</label><input type="text" id="title" required></div>
+            <div class="form-group"><label>Описание</label><textarea id="description" rows="4"></textarea></div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;"><label>ID Автора</label><input type="number" id="author_id"></div>
+                <div class="form-group" style="flex: 1;"><label>ID Жанра</label><input type="number" id="genre_id"></div>
             </div>
 
             <div class="form-group">
-                <label>Описание</label>
-                <textarea id="description" rows="3">{{ data.book.description }}</textarea>
-            </div>
-
-            <div class="form-group">
-                <label>ID автора</label>
-                <input type="number" id="author_id" value="{{ data.book.author_id }}">
-            </div>
-
-            <div class="form-group">
-                <label>ID жанра</label>
-                <input type="number" id="genre_id" value="{{ data.book.genre_id }}">
-            </div>
-
-            <div class="form-group">
-                <label>Дополнительные поля</label>
-                <div id="extraFields">
-                    {% if data.book.extra_data %}
-                        {% for key, value in data.book.extra_data.items() %}
-                        <div class="dynamic-field">
-                            <input class="field-name" value="{{key}}" placeholder="Название">
-                            <input class="field-value" value="{{value}}" placeholder="Значение">
-                        </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+                <label>Доп. поля</label>
+                <div id="extraFields"></div>
                 <button type="button" class="add-field" onclick="addField()">+ Добавить поле</button>
             </div>
 
             <div class="action-buttons">
-                <button type="submit">Сохранить изменения</button>
-                <button type="button" class="btn-delete" onclick="deleteBook()">Удалить книгу</button>
+                <button type="submit" class="btn-save">💾 Сохранить изменения</button>
+                <button type="button" class="btn-delete" onclick="deleteBook()">🗑️ Удалить запись</button>
             </div>
         </form>
     </div>
 </main>
 
 <script>
-    const currentId = parseInt(document.getElementById("book_id").value);
+    // Включаем логирование
+    console.log("JS: Скрипт инициализирован");
 
-    // Навигация по ID
-    function navigateRecord(step) {
-        const nextId = currentId + step;
-        if (nextId > 0) {
-            window.location.href = `/page/book/form/${nextId}`;
-        }
+    // Функция для безопасного получения ID
+    function getCurrentId() {
+        const el = document.getElementById("book_id_input");
+        return el ? parseInt(el.value) : null;
     }
 
-    // Удаление книги
-    async function deleteBook() {
-        if (!confirm("Вы уверены, что хотите безвозвратно удалить эту книгу?")) return;
+    // ЛОГИКА НАВИГАЦИИ
+    async function initNavigation() {
+        const bookId = getCurrentId();
+        console.log("JS: Начинаю настройку навигации для ID:", bookId);
+
+        if (!bookId) {
+            console.error("JS: ID книги не найден в DOM!");
+            return;
+        }
 
         try {
-            const response = await fetch(`/api/book/${currentId}`, {
-                method: "DELETE"
-            });
-            const result = await response.json();
+            console.log(`JS: Отправляю запрос на /api/book/ids/${bookId}`);
+            const res = await fetch(`/api/book/ids/${bookId}`);
 
-            if (response.ok) {
-                alert("Книга успешно удалена");
-                window.location.href = "/";
-            } else {
-                alert("Ошибка: " + result.message);
+            if (!res.ok) {
+                console.error("JS: API ответил ошибкой:", res.status);
+                return;
             }
-        } catch (e) {
-            alert("Ошибка связи с сервером");
+
+            const ids = await res.json();
+            console.log("JS: Данные от API получены:", ids);
+
+            const buttons = [
+                { id: 'btn-first', target: ids.first },
+                { id: 'btn-prev', target: ids.prev },
+                { id: 'btn-next', target: ids.next },
+                { id: 'btn-last', target: ids.last }
+            ];
+
+            buttons.forEach(btn => {
+                const el = document.getElementById(btn.id);
+                if (btn.target && btn.target !== 0 && btn.target !== bookId) {
+                    el.href = `/page/book/form/${btn.target}`;
+                    el.classList.add('active');
+                    console.log(`JS: Кнопка ${btn.id} активирована -> ID ${btn.target}`);
+                } else {
+                    el.href = "javascript:void(0)";
+                    el.classList.remove('active');
+                }
+            });
+        } catch (err) {
+            console.error("JS: Ошибка при выполнении fetch:", err);
         }
     }
 
-    function addField(){
-        const container = document.getElementById("extraFields");
+    // ДИНАМИЧЕСКИЕ ПОЛЯ
+    function addField(k = '', v = '') {
         const div = document.createElement("div");
-        div.classList.add("dynamic-field");
+        div.className = "dynamic-field";
         div.innerHTML = `
-            <input class="field-name" placeholder="Название поля">
-            <input class="field-value" placeholder="Значение">
+            <input type="text" class="field-name" placeholder="Ключ" value="${k}" style="flex:1; padding:8px; border-radius:8px; border:1px solid #f2dca0;">
+            <input type="text" class="field-value" placeholder="Значение" value="${v}" style="flex:1; padding:8px; border-radius:8px; border:1px solid #f2dca0;">
+            <span class="btn-remove" onclick="this.parentElement.remove()">×</span>
         `;
-        container.appendChild(div);
+        document.getElementById("extraFields").appendChild(div);
     }
 
-    function collectExtra(){
-        const names = document.querySelectorAll(".field-name");
-        const values = document.querySelectorAll(".field-value");
-        let extra = {};
-        for(let i=0; i<names.length; i++){
-            const key = names[i].value.trim();
-            const value = values[i].value.trim();
-            if(key) extra[key] = value;
+    // ЗАПОЛНЕНИЕ ФОРМЫ
+    function setupForm() {
+        console.log("JS: Заполнение формы данными...");
+        try {
+            document.getElementById("title").value = "{{ data.book.title }}";
+            document.getElementById("description").value = `{{ data.book.description or '' }}`;
+            document.getElementById("author_id").value = "{{ data.book.author_id or '' }}";
+            document.getElementById("genre_id").value = "{{ data.book.genre_id or '' }}";
+
+            // Безопасный парсинг JSON
+            const extraRaw = '{{ data.book.extra_data | tojson | safe }}';
+            const extra = JSON.parse(extraRaw || '{}');
+
+            const container = document.getElementById("extraFields");
+            container.innerHTML = '';
+            Object.entries(extra).forEach(([k, v]) => addField(k, v));
+            console.log("JS: Форма заполнена успешно");
+        } catch (e) {
+            console.error("JS: Ошибка при заполнении формы (проверь extra_data):", e);
         }
-        return extra;
     }
 
-    document.getElementById("editForm").addEventListener("submit", async function(e){
-        e.preventDefault();
-        const book = {
-            id: currentId,
-            title: document.getElementById("title").value,
-            description: document.getElementById("description").value,
-            author_id: parseInt(document.getElementById("author_id").value) || null,
-            genre_id: parseInt(document.getElementById("genre_id").value) || null,
-            extra_data: collectExtra()
-        };
+    // УДАЛЕНИЕ
+    async function deleteBook() {
+        const id = getCurrentId();
+        if (confirm("Удалить книгу?") && id) {
+            const res = await fetch(`/api/book/${id}`, { method: 'DELETE' });
+            if (res.ok) window.location.href = "/";
+        }
+    }
 
-        const response = await fetch("/api/book/edit", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ book_data: [book] })
+    // ЗАПУСК ПРИ ЗАГРУЗКЕ
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("JS: DOM готов, запускаю функции...");
+        setupForm();
+        initNavigation();
+    });
+
+    // СОХРАНЕНИЕ
+    document.getElementById("editForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const extra = {};
+        document.querySelectorAll(".dynamic-field").forEach(f => {
+            const k = f.querySelector(".field-name").value.trim();
+            const v = f.querySelector(".field-value").value.trim();
+            if (k) extra[k] = v;
         });
 
-        if(response.ok) {
-            window.location.href = "/";
-        } else {
-            alert("Ошибка обновления");
-        }
-    });
+        const res = await fetch("/api/book/edit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ book_data: [{
+                id: getCurrentId(),
+                title: document.getElementById("title").value,
+                description: document.getElementById("description").value,
+                author_id: parseInt(document.getElementById("author_id").value) || null,
+                genre_id: parseInt(document.getElementById("genre_id").value) || null,
+                extra_data: extra
+            }]})
+        });
+        if (res.ok) window.location.href = "/";
+    };
 </script>
-
 </body>
 </html>

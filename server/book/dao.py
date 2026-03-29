@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, update, asc, desc
+from sqlalchemy import select, insert, update, asc, desc, func
 from sqlalchemy.orm import selectinload
 
 from basedao.dao import BaseDAO
@@ -44,6 +44,32 @@ class BookDAO(BaseDAO):
                 await session.commit()
                 return True
             return False
+
+    @classmethod
+    async def get_ids(cls, book_id: int):
+        async with async_session_maker() as session:
+            # Находим минимальный и максимальный ID в таблице
+            first_q = select(func.min(cls.model.id))
+            last_q = select(func.max(cls.model.id))
+
+            # Находим ближайший ID, который меньше текущего
+            prev_q = select(cls.model.id).filter(cls.model.id < book_id).order_by(cls.model.id.desc()).limit(1)
+
+            # Находим ближайший ID, который больше текущего
+            next_q = select(cls.model.id).filter(cls.model.id > book_id).order_by(cls.model.id.asc()).limit(1)
+
+            first_res = await session.execute(first_q)
+            last_res = await session.execute(last_q)
+            prev_res = await session.execute(prev_q)
+            next_res = await session.execute(next_q)
+
+            return {
+                "first": first_res.scalar() or 0,
+                "prev": prev_res.scalar() or 0,
+                "current": book_id,
+                "next": next_res.scalar() or 0,
+                "last": last_res.scalar() or 0
+            }
 
     @classmethod
     async def update_one(cls, book_data):

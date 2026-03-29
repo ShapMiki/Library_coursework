@@ -66,3 +66,8 @@ async def delete_book(book_id: int):
     if result:
         return {"status": "success", "message": f"Книга {book_id} удалена"}
     return {"status": "error", "message": "Книга не найдена"}
+
+@router.get("/ids/{book_id}")
+async def get_book_ids(book_id: int):
+    data = await BookDAO.get_ids(book_id)
+    return data
