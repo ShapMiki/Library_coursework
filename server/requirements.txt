@@ -8,9 +8,4 @@ asyncpg==0.30.0
 passlib==1.7.4
 python-jose==3.5.0
 bcrypt>=4.0.0,<4.1.0
-pillow==11.3.0
 psycopg2-binary==2.9.11
-fastapi-amis-admin==0.7.3
-fastapi_user_auth==0.7.3
-python_dateutil==2.9.0
-

@@ -1,6 +1,6 @@
 services:
   PostgresDB:
-    image: postgres:17
+    image: postgres:15
     container_name: my_postgres_db
     restart: always
     volumes:
