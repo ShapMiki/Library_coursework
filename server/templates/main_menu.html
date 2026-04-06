@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Главное меню — Библиотека</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #fffdf6, #fff8e6);
+            color: #5c4a1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(184, 137, 30, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #b8891e;
+        }
+
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Стили кнопок из оригинального файла */
+        .wizard-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 18px;
+            font-weight: 500;
+            background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 100%);
+            border: 1px solid #ababab;
+            border-radius: 8px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+            transition: 0.2s;
+        }
+
+        .wizard-btn:hover {
+            background: linear-gradient(to bottom, #f9f9f9 0%, #dcdcdc 100%);
+            border-color: #888;
+            transform: translateY(-2px);
+        }
+
+        .wizard-btn:active {
+            background: #d0d0d0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(0);
+        }
+
+        .back-link {
+            margin-top: 25px;
+            display: inline-block;
+            color: #b8891e;
+            text-decoration: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="menu-container">
+    <h1>📚 Библиотека</h1>
+    <div class="menu-grid">
+        <a href="/page/books" class="wizard-btn">📖 Книги</a>
+        <a href="/page/authors" class="wizard-btn">✍️ Авторы</a>
+        <a href="/page/genres" class="wizard-btn">🎭 Жанры</a>
+    </div>
+    <a href="javascript:history.back()" class="back-link">← Вернуться назад</a>
+</div>
+
+</body>
+</html>

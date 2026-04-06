@@ -14,25 +14,25 @@
         main { display: flex; justify-content: center; padding: 20px 40px 40px 40px; }
         .form-card { width: 500px; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 
-        /* НАВИГАЦИЯ */
         .record-nav { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 25px; }
         .btn-nav {
             flex: 1; padding: 12px 2px; font-size: 10px; font-weight: 700; text-transform: uppercase;
             color: #ccc; background: #f9f9f9; border: 1px solid #ddd; border-radius: 6px;
             text-align: center; text-decoration: none; cursor: default; transition: all 0.2s;
         }
-        .btn-nav.active {
-            color: #b8891e; background: #fff; border-color: #b8891e; cursor: pointer;
-        }
+        .btn-nav.active { color: #b8891e; background: #fff; border-color: #b8891e; cursor: pointer; }
         .btn-nav.active:hover { background: #b8891e; color: #fff; }
 
         .form-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #b8891e; text-align: center; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #9a874f; margin-bottom: 6px; }
-        .form-group input, .form-group textarea {
+
+        .form-group input, .form-group textarea, .form-group select {
             width: 100%; padding: 12px; border-radius: 10px;
             border: 1px solid #f2dca0; background: #fffcf5; outline: none; font-size: 14px;
+            color: #5c4a1a;
         }
+
         .dynamic-field { display: flex; gap: 8px; margin-bottom: 8px; }
         .btn-remove { color: #d9534f; cursor: pointer; font-weight: bold; padding: 5px; }
         .add-field { background: #fff4cc; border: 1px dashed #b8891e; padding: 10px; cursor: pointer; width: 100%; border-radius: 10px; color: #5c4a1a; margin-top: 5px; }
@@ -66,8 +66,18 @@
             <div class="form-group"><label>Описание</label><textarea id="description" rows="4"></textarea></div>
 
             <div style="display: flex; gap: 15px;">
-                <div class="form-group" style="flex: 1;"><label>ID Автора</label><input type="number" id="author_id"></div>
-                <div class="form-group" style="flex: 1;"><label>ID Жанра</label><input type="number" id="genre_id"></div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Автор</label>
+                    <select id="author_select">
+                        <option value="">Загрузка...</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Жанр</label>
+                    <select id="genre_select">
+                        <option value="">Загрузка...</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
@@ -85,61 +95,84 @@
 </main>
 
 <script>
-    // Включаем логирование
-    console.log("JS: Скрипт инициализирован");
+    const currentBookGenreId = "{{ data.book.genre_id }}";
+    const currentBookAuthorId = "{{ data.book.author_id }}";
 
-    // Функция для безопасного получения ID
+    // 1. ЗАГРУЗКА АВТОРОВ
+    async function loadAuthors() {
+        const select = document.getElementById("author_select");
+        try {
+            const response = await fetch('/api/author/all');
+            if (!response.ok) throw new Error('Ошибка сети');
+            const authors = await response.json();
+            select.innerHTML = '<option value="">Выберите автора...</option>';
+
+            authors.forEach(a => {
+                const opt = document.createElement("option");
+                opt.value = a.id;
+                opt.textContent = a.name;
+                if (a.id == currentBookAuthorId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            console.error(e);
+            select.innerHTML = '<option value="">Ошибка загрузки</option>';
+        }
+    }
+
+    // 2. ЗАГРУЗКА ЖАНРОВ
+    async function loadGenres() {
+        const select = document.getElementById("genre_select");
+        try {
+            const response = await fetch('/api/genre/all');
+            if (!response.ok) throw new Error('Ошибка сети');
+            const genres = await response.json();
+            select.innerHTML = '<option value="">Выберите жанр...</option>';
+
+            genres.forEach(g => {
+                const opt = document.createElement("option");
+                opt.value = g.id;
+                opt.textContent = g.name;
+                if (g.id == currentBookGenreId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            console.error(e);
+            select.innerHTML = '<option value="">Ошибка загрузки</option>';
+        }
+    }
+
     function getCurrentId() {
         const el = document.getElementById("book_id_input");
         return el ? parseInt(el.value) : null;
     }
 
-    // ЛОГИКА НАВИГАЦИИ
     async function initNavigation() {
         const bookId = getCurrentId();
-        console.log("JS: Начинаю настройку навигации для ID:", bookId);
-
-        if (!bookId) {
-            console.error("JS: ID книги не найден в DOM!");
-            return;
-        }
-
+        if (!bookId) return;
         try {
-            console.log(`JS: Отправляю запрос на /api/book/ids/${bookId}`);
             const res = await fetch(`/api/book/ids/${bookId}`);
-
-            if (!res.ok) {
-                console.error("JS: API ответил ошибкой:", res.status);
-                return;
-            }
-
+            if (!res.ok) return;
             const ids = await res.json();
-            console.log("JS: Данные от API получены:", ids);
-
             const buttons = [
                 { id: 'btn-first', target: ids.first },
                 { id: 'btn-prev', target: ids.prev },
                 { id: 'btn-next', target: ids.next },
                 { id: 'btn-last', target: ids.last }
             ];
-
             buttons.forEach(btn => {
                 const el = document.getElementById(btn.id);
                 if (btn.target && btn.target !== 0 && btn.target !== bookId) {
                     el.href = `/page/book/form/${btn.target}`;
                     el.classList.add('active');
-                    console.log(`JS: Кнопка ${btn.id} активирована -> ID ${btn.target}`);
                 } else {
                     el.href = "javascript:void(0)";
                     el.classList.remove('active');
                 }
             });
-        } catch (err) {
-            console.error("JS: Ошибка при выполнении fetch:", err);
-        }
+        } catch (err) { console.error(err); }
     }
 
-    // ДИНАМИЧЕСКИЕ ПОЛЯ
     function addField(k = '', v = '') {
         const div = document.createElement("div");
         div.className = "dynamic-field";
@@ -151,29 +184,18 @@
         document.getElementById("extraFields").appendChild(div);
     }
 
-    // ЗАПОЛНЕНИЕ ФОРМЫ
     function setupForm() {
-        console.log("JS: Заполнение формы данными...");
+        document.getElementById("title").value = "{{ data.book.title }}";
+        document.getElementById("description").value = `{{ data.book.description or '' }}`;
+        const extraRaw = '{{ data.book.extra_data | tojson | safe }}';
         try {
-            document.getElementById("title").value = "{{ data.book.title }}";
-            document.getElementById("description").value = `{{ data.book.description or '' }}`;
-            document.getElementById("author_id").value = "{{ data.book.author_id or '' }}";
-            document.getElementById("genre_id").value = "{{ data.book.genre_id or '' }}";
-
-            // Безопасный парсинг JSON
-            const extraRaw = '{{ data.book.extra_data | tojson | safe }}';
             const extra = JSON.parse(extraRaw || '{}');
-
             const container = document.getElementById("extraFields");
             container.innerHTML = '';
             Object.entries(extra).forEach(([k, v]) => addField(k, v));
-            console.log("JS: Форма заполнена успешно");
-        } catch (e) {
-            console.error("JS: Ошибка при заполнении формы (проверь extra_data):", e);
-        }
+        } catch (e) { console.error("Ошибка парсинга", e); }
     }
 
-    // УДАЛЕНИЕ
     async function deleteBook() {
         const id = getCurrentId();
         if (confirm("Удалить книгу?") && id) {
@@ -182,14 +204,13 @@
         }
     }
 
-    // ЗАПУСК ПРИ ЗАГРУЗКЕ
     document.addEventListener("DOMContentLoaded", () => {
-        console.log("JS: DOM готов, запускаю функции...");
         setupForm();
         initNavigation();
+        loadGenres();
+        loadAuthors(); // Загружаем список авторов
     });
 
-    // СОХРАНЕНИЕ
     document.getElementById("editForm").onsubmit = async (e) => {
         e.preventDefault();
         const extra = {};
@@ -199,19 +220,28 @@
             if (k) extra[k] = v;
         });
 
-        const res = await fetch("/api/book/edit", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ book_data: [{
+        const payload = {
+            book_data: [{
                 id: getCurrentId(),
                 title: document.getElementById("title").value,
                 description: document.getElementById("description").value,
-                author_id: parseInt(document.getElementById("author_id").value) || null,
-                genre_id: parseInt(document.getElementById("genre_id").value) || null,
+                author_id: parseInt(document.getElementById("author_select").value) || null, // Берем ID из селекта
+                genre_id: parseInt(document.getElementById("genre_select").value) || null,
                 extra_data: extra
-            }]})
+            }]
+        };
+
+        const res = await fetch("/api/book/edit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
         });
-        if (res.ok) window.location.href = "/";
+
+        if (res.ok) {
+            window.location.href = "/";
+        } else {
+            alert("Ошибка при сохранении!");
+        }
     };
 </script>
 </body>

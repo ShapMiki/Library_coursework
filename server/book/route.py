@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Request, Response, status, Depends
+from fastapi.responses import StreamingResponse
 from typing import Optional, Union
 
 from book.schemas import *
 from book.dao import BookDAO
+from book.service import generate_report
 from genre.model import Genre
+from genre.dao import  GenreDAO
 from author.model import Author
 from user.model import User
 
@@ -21,10 +24,20 @@ async def root():
 @router.post("/edit")
 async def edit_books(data: SBookDataSet):
     book_data = data.book_data
+    print(book_data)
+
     if not book_data:
         books = await BookDAO.find_all()
         return {"book_data": books}
     for book in book_data:
+        genre_input = book.get('genre_id')
+        try:
+            book['genre_id'] = int(genre_input)
+        except:
+            genre_id = await GenreDAO.get_id_by_name(genre_input)
+            if genre_id:
+                book['genre_id'] = genre_id
+
         await BookDAO.update_one(book)
 
 
@@ -49,7 +62,6 @@ async def get_all_books(
     sort_by: str = "title",
     order: str = "asc"
 ):
-    # Чистим genre_id как раньше
     safe_genre_id = int(genre_id) if genre_id and str(genre_id).isdigit() else None
 
     books = await BookDAO.find_filtered(
@@ -71,3 +83,16 @@ async def delete_book(book_id: int):
 async def get_book_ids(book_id: int):
     data = await BookDAO.get_ids(book_id)
     return data
+
+
+@router.post("/report")
+async def report(data: dict):
+    file_stream = await generate_report(data)
+
+    docx_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+    return StreamingResponse(
+        file_stream,
+        media_type=docx_type,
+        headers={"Content-Disposition": "attachment; filename=report.docx"}
+    )

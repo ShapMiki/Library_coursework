@@ -11,101 +11,17 @@
         header { display: flex; justify-content: space-between; align-items: center; padding: 20px 60px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 22px; font-weight: 600; color: #b8891e; text-decoration: none; }
         main { padding: 40px 60px; max-width: 1200px; margin: 0 auto; }
-
-        /* Стили бургера */
-        .burger-menu {
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            padding: 10px;
-            margin-left: 20px;
-        }
-        .burger-menu span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: #b8891e;
-            border-radius: 3px;
-            transition: 0.3s;
-        }
-
-        /* Выезжающая панель (Сайдбар) */
-        .side-wizard {
-            position: fixed;
-            top: 0;
-            right: -300px; /* Скрыто по умолчанию */
-            width: 300px;
-            height: 100%;
-            background: #f4f4f4;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            z-index: 1000;
-            transition: 0.4s ease;
-            padding: 60px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .side-wizard.active { right: 0; }
-
-        .close-wizard {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #8b6a1a;
-        }
-
-        /* Стили кнопок как на скриншоте */
-        .wizard-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            font-weight: 500;
-            background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 100%);
-            border: 1px solid #ababab;
-            border-radius: 4px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
-            transition: 0.2s;
-        }
-        .wizard-btn:hover {
-            background: linear-gradient(to bottom, #f9f9f9 0%, #dcdcdc 100%);
-            border-color: #888;
-        }
-        .wizard-btn:active {
-            background: #d0d0d0;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Затемнение при открытии меню */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.3);
-            display: none;
-            z-index: 999;
-        }
-        .overlay.active { display: block; }
-
-        /* Остальные стили */
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+        .nav-links a { color: #b8891e; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .btn-mass-edit { background: #fff4cc; padding: 8px 12px; border-radius: 8px; font-weight: 600; border: 1px solid #f2dca0; }
         .filter-panel { background: white; padding: 20px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .filter-form { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
         .filter-group { display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
-        .filter-group.short { flex-grow: 0; min-width: 200px; }
         .filter-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #9a874f; }
         .filter-form input, .filter-form select { padding: 10px 14px; border-radius: 10px; border: 1px solid #f2dca0; background: #fffcf5; font-size: 14px; outline: none; }
         .btn-submit { background: #b8891e; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-
         #book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        .book-card { background: white; border-radius: 18px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); transition: 0.3s; height: 100%; border: 1px solid transparent; }
+        .book-card { background: white; border-radius: 18px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); transition: 0.3s; height: 100%; border: 1px solid transparent; position: relative; }
         .book-card:hover { transform: translateY(-5px); border-color: #f2dca0; box-shadow: 0 10px 25px rgba(184, 137, 30, 0.1); }
         .book-cover { height: 160px; background: #fef9e7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 12px; }
         .book-title { font-weight: 600; font-size: 16px; margin-bottom: 5px; }
@@ -117,28 +33,15 @@
 
 <header>
     <a href="/" class="logo">📚 Library</a>
-    <div style="display: flex; align-items: center;">
-        <div class="nav-links" style="display: flex">
-            <a href="/page/book/form" style="margin-right:20px; color: #b8891e; text-decoration: none; font-size: 14px; font-weight: 500;">✚ Добавить книгу</a>
-            <a href="/page/author/form" style="margin-right:20px; color: #b8891e; text-decoration: none; font-size: 14px; font-weight: 500;">✚ Добавить Автора</a>
-            <a href="/page/genre/form" style="margin-right:20px; color: #b8891e; text-decoration: none; font-size: 14px; font-weight: 500;">✚ Добавить Жанр</a>
-        </div>
-
-        <div class="burger-menu" id="burger-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+    <div class="nav-links">
+        <a href="/page/books/edit" class="btn-mass-edit">✏️ Массовое редактирование</a>
+        <a href="/page/report" style="color: #b8891e; font-weight: 600;">📄 Создать отчет</a>
+        <a href="/page/book/form">✚ Добавить книгу</a>
+        <a href="/page/author/form">✚ Автор</a>
+        <a href="/page/genre/form">✚ Жанр</a>
+        <a href="/page/main-menu">☰</a>
     </div>
 </header>
-
-<div class="overlay" id="overlay"></div>
-<div class="side-wizard" id="side-wizard">
-    <div class="close-wizard" id="close-wizard">&times;</div>
-    <a href="/page/books" class="wizard-btn">Книги</a>
-    <a href="/page/authors" class="wizard-btn">Авторы</a>
-    <a href="/page/genres" class="wizard-btn">Жанры</a>
-</div>
 
 <main>
     <section class="filter-panel">
@@ -147,15 +50,6 @@
                 <label>Поиск по названию</label>
                 <input type="text" name="title" placeholder="Начните печатать...">
             </div>
-            <div class="filter-group short">
-                <label>Сортировать</label>
-                <select name="sort_combined">
-                    <option value="title:asc">Название (А-Я)</option>
-                    <option value="title:desc">Название (Я-А)</option>
-                    <option value="id:desc">Сначала новые</option>
-                    <option value="id:asc">Сначала старые</option>
-                </select>
-            </div>
             <button type="submit" class="btn-submit">Найти</button>
         </form>
     </section>
@@ -163,72 +57,31 @@
 </main>
 
 <script>
-    // Логика открытия/закрытия меню
-    const burgerToggle = document.getElementById('burger-toggle');
-    const sideWizard = document.getElementById('side-wizard');
-    const closeWizard = document.getElementById('close-wizard');
-    const overlay = document.getElementById('overlay');
-
-    const toggleMenu = () => {
-        sideWizard.classList.toggle('active');
-        overlay.classList.toggle('active');
-    };
-
-    burgerToggle.addEventListener('click', toggleMenu);
-    closeWizard.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', toggleMenu);
-
-    // Существующая логика загрузки книг
-    const filterForm = document.getElementById('filter-form');
-    const bookGrid = document.getElementById('book-grid');
-
     async function fetchBooks() {
-        const formData = new FormData(filterForm);
-        const params = new URLSearchParams();
-        const title = formData.get('title');
-        if (title) params.append('title', title);
-        const sortValue = formData.get('sort_combined');
-        const [sortBy, order] = sortValue.split(':');
-        params.append('sort_by', sortBy);
-        params.append('order', order);
-
+        const params = new URLSearchParams(new FormData(document.getElementById('filter-form')));
         try {
             const response = await fetch(`/api/book/all?${params.toString()}`);
             const data = await response.json();
             renderBooks(data.books);
-        } catch (e) {
-            bookGrid.innerHTML = '<p>Ошибка связи с сервером</p>';
-        }
+        } catch (e) { console.error(e); }
     }
 
     function renderBooks(books) {
-        bookGrid.innerHTML = '';
-        if (!books || !books.length) {
-            bookGrid.innerHTML = '<p>Ничего не нашлось по вашему запросу.</p>';
-            return;
-        }
-        books.forEach(book => {
-            const html = `
-                <a href="/page/book/form/${book.id}" style="text-decoration: none; color: inherit;">
-                    <article class="book-card">
-                        <div class="book-cover">📖</div>
-                        <div class="book-title">${book.title}</div>
-                        <div class="book-author">${book.author || 'Автор не указан'}</div>
-                        <div class="book-genre">${book.genre || 'Общее'}</div>
-                    </article>
-                </a>
-            `;
-            bookGrid.insertAdjacentHTML('beforeend', html);
-        });
+        const grid = document.getElementById('book-grid');
+        grid.innerHTML = books.map(book => `
+            <a href="/page/book/form/${book.id}" style="text-decoration: none; color: inherit;">
+                <article class="book-card">
+                    <div class="book-cover">📖</div>
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-author">${book.author || 'Автор не указан'}</div>
+                    <span class="book-genre">${book.genre || 'Общее'}</span>
+                </article>
+            </a>
+        `).join('');
     }
 
-    filterForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        fetchBooks();
-    });
-
+    document.getElementById('filter-form').onsubmit = (e) => { e.preventDefault(); fetchBooks(); };
     fetchBooks();
 </script>
-
 </body>
 </html>

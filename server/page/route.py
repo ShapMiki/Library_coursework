@@ -104,3 +104,10 @@ async def book_form(request: Request, user=Depends(get_current_user)):
 async def book_form(request: Request, user=Depends(get_current_user)):
     return templates.TemplateResponse("genre_form.html", {"request": request})
 
+@router.get("/main-menu")
+async def menu(request: Request):
+    return templates.TemplateResponse("main_menu.html", {"request": request})
+
+@router.get("/report")
+async def menu(request: Request):
+    return templates.TemplateResponse("report_form.html", {"request": request})

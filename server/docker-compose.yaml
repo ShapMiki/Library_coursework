@@ -1,6 +1,6 @@
 services:
   PostgresDB:
-    image: postgres:15
+    image: postgres:17
     container_name: my_postgres_db
     restart: always
     volumes:
@@ -16,6 +16,7 @@ services:
 
     ports:
       - "5432:5432"
+      - "5444:5432"
 
   Server:
     image: library

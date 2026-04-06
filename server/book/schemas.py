@@ -7,8 +7,8 @@ from config import settings
 class SBook(BaseModel):
     title: str
     description: str
-    author_id: Optional[int] = None
-    genre_id: Optional[int] = None
+    author_id: Optional[str] = None
+    genre_id: Optional[str] = None
     extra_data: Optional[dict] = None
 
     class Config:

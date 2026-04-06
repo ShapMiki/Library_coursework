@@ -1,162 +1,97 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Редактирование книг</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter,sans-serif;
-}
-
-body{
-background:linear-gradient(135deg,#fffdf6,#fff8e6);
-color:#5c4a1a;
-}
-
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:25px 60px;
-}
-
-.logo{
-font-size:22px;
-font-weight:600;
-color:#b8891e;
-}
-
-main{
-padding:40px 60px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-gap:20px;
-}
-
-.card{
-background:white;
-border-radius:14px;
-padding:20px;
-box-shadow:0 6px 20px rgba(0,0,0,0.05);
-}
-
-.card input,
-.card textarea{
-width:100%;
-margin-top:6px;
-margin-bottom:10px;
-padding:8px;
-border-radius:8px;
-border:1px solid #f2dca0;
-}
-
-.save-btn{
-margin-top:30px;
-padding:14px;
-border:none;
-border-radius:10px;
-background:#f2c94c;
-font-weight:600;
-cursor:pointer;
-width:100%;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <title>Массовое редактирование</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:Inter,sans-serif; }
+        body { background:linear-gradient(135deg,#fffdf6,#fff8e6); color:#5c4a1a; min-height: 100vh; }
+        header { display:flex; justify-content:space-between; align-items:center; padding:25px 60px; background: white; }
+        .logo { font-size:22px; font-weight:600; color:#b8891e; text-decoration: none; }
+        main { padding:40px 60px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:20px; }
+        .card { background:white; border-radius:14px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.05); border: 1px solid #f2dca0; }
+        .card label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #9a874f; margin-top: 10px; }
+        .card input, .card textarea, .card select { width:100%; margin-top:4px; padding:10px; border-radius:8px; border:1px solid #f2dca0; background: #fffcf5; outline: none; }
+        .btn-delete-card { margin-top: 15px; background: #fff0f0; color: #d9534f; border: 1px solid #f5c6cb; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; }
+        .save-all-btn { position: fixed; bottom: 30px; right: 30px; padding: 15px 30px; border: none; border-radius: 50px; background: #f2c94c; font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    </style>
 </head>
-
 <body>
 
 <header>
-<div class="logo">📚 Library Registry</div>
-<a href="/">Назад</a>
+    <a href="/" class="logo">📚 Library Registry</a>
+    <a href="/" style="color: #b8891e; text-decoration: none;">← Назад</a>
 </header>
 
 <main>
+    <div class="grid">
+        {% for book in data.books %}
+        <div class="card book-form" id="book-card-{{book.id}}">
+            <input type="hidden" class="id" value="{{book.id}}">
+            <label>Название</label>
+            <input class="title" value="{{book.title}}">
+            <label>Описание</label>
+            <textarea class="description" rows="2">{{book.description}}</textarea>
 
-<div class="grid">
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Автор</label>
+                    <select class="author_select" data-selected="{{book.author_id}}"><option>Загрузка...</option></select>
+                </div>
+                <div style="flex: 1;">
+                    <label>Жанр</label>
+                    <select class="genre_select" data-selected="{{book.genre_id}}"><option>Загрузка...</option></select>
+                </div>
+            </div>
 
-{% for book in data.books %}
-
-<div class="card book-form">
-
-<input type="hidden" class="id" value="{{book.id}}">
-
-<label>Название</label>
-<input class="title" value="{{book.title}}">
-
-<label>Описание</label>
-<textarea class="description">{{book.description}}</textarea>
-
-<label>Автор ID</label>
-<input class="author_id" type="number" value="{{book.author_id}}">
-
-<label>Жанр ID</label>
-<input class="genre_id" type="number" value="{{book.genre_id}}">
-
-</div>
-
-{% endfor %}
-
-</div>
-
-<button class="save-btn" onclick="saveAll()">
-Сохранить все книги
-</button>
-
+            <button class="btn-delete-card" onclick="deleteBook('{{book.id}}')">🗑️ Удалить книгу</button>
+        </div>
+        {% endfor %}
+    </div>
+    <button class="save-all-btn" onclick="saveAll()">💾 Сохранить всё</button>
 </main>
 
 <script>
+    async function loadSelects(url, className) {
+        const res = await fetch(url);
+        const items = await res.json();
+        document.querySelectorAll(`.${className}`).forEach(select => {
+            const current = select.getAttribute('data-selected');
+            select.innerHTML = '<option value="">Не выбрано</option>' +
+                items.map(i => `<option value="${i.id}" ${i.id == current ? 'selected' : ''}>${i.name}</option>`).join('');
+        });
+    }
 
-async function saveAll(){
+    async function deleteBook(id) {
+        if (!confirm("Удалить книгу?")) return;
+        const res = await fetch(`/api/book/${id}`, { method: 'DELETE' });
+        if (res.ok) document.getElementById(`book-card-${id}`).remove();
+    }
 
-const forms = document.querySelectorAll(".book-form")
+    async function saveAll() {
+        const books = Array.from(document.querySelectorAll(".book-form")).map(f => ({
+            id: parseInt(f.querySelector(".id").value),
+            title: f.querySelector(".title").value,
+            description: f.querySelector(".description").value,
+            author_id: parseInt(f.querySelector(".author_select").value) || null,
+            genre_id: parseInt(f.querySelector(".genre_select").value) || null
+        }));
 
-let books = []
+        const res = await fetch("/api/book/edit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ book_data: books })
+        });
+        if (res.ok) { alert("Сохранено!"); location.href = "/"; }
+    }
 
-forms.forEach(form=>{
-
-books.push({
-id: form.querySelector(".id").value,
-title: form.querySelector(".title").value,
-description: form.querySelector(".description").value,
-author_id: form.querySelector(".author_id").value || null,
-genre_id: form.querySelector(".genre_id").value || null
-})
-
-})
-
-const response = await fetch("/api/book/edit",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-book_data:books
-})
-})
-
-if(response.ok){
-alert("Книги обновлены")
-location.reload()
-}else{
-alert("Ошибка")
-}
-
-}
-
+    document.addEventListener("DOMContentLoaded", () => {
+        loadSelects('/api/author/all', 'author_select');
+        loadSelects('/api/genre/all', 'genre_select');
+    });
 </script>
-
 </body>
 </html>

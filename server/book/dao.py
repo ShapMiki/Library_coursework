@@ -91,9 +91,12 @@ class BookDAO(BaseDAO):
                 book.description = book_data["description"]
 
             try:
-                if "author_id" in book_data:
+                 if "author_id" in book_data:
                     book.author_id = int(book_data["author_id"])
+            except TypeError:
+                pass
 
+            try:
                 if "genre_id" in book_data:
                     book.genre_id = int(book_data["genre_id"])
             except TypeError:
