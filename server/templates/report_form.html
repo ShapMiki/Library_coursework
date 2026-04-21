@@ -4,75 +4,230 @@
     <meta charset="UTF-8">
     <title>Конструктор отчета</title>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #fef9e7; padding: 40px; color: #5c4a1a; }
-        .container { background: white; padding: 30px; border-radius: 20px; max-width: 800px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h2 { margin-bottom: 25px; color: #b8891e; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fef9e7;
+            padding: 40px;
+            color: #5c4a1a;
+        }
 
-        .config-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        .config-table th { text-align: left; font-size: 12px; text-transform: uppercase; color: #9a874f; padding: 10px; }
-        .config-table td { padding: 10px; border-bottom: 1px solid #f2dca0; }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 900px;
+            margin: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
 
-        .input-text { padding: 8px; border: 1px solid #f2dca0; border-radius: 6px; background: #fffcf5; width: 100%; }
-        .checkbox-custom { width: 20px; height: 20px; cursor: pointer; }
+        h2, h3 {
+            color: #b8891e;
+        }
 
-        .creator-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 2px dashed #f2dca0; }
-        .btn-generate { width: 100%; padding: 15px; background: #b8891e; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 30px; transition: 0.3s; }
-        .btn-generate:hover { background: #9a751a; transform: translateY(-2px); }
+        h2 {
+            margin-bottom: 25px;
+        }
+
+        .config-table, .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .config-table th, .preview-table th {
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #9a874f;
+            padding: 10px;
+            border-bottom: 2px solid #f2dca0;
+        }
+
+        .config-table td, .preview-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f2dca0;
+            font-size: 14px;
+        }
+
+        .input-text {
+            padding: 8px;
+            border: 1px solid #f2dca0;
+            border-radius: 6px;
+            background: #fffcf5;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .creator-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #f2dca0;
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 15px;
+            background: #b8891e;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 30px 0;
+            transition: 0.3s;
+        }
+
+        .btn-generate:hover {
+            background: #9a751a;
+            transform: translateY(-2px);
+        }
+
+        /* Стили для таблицы предпросмотра */
+        .preview-section {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 3px solid #f2dca0;
+        }
+
+        .preview-table {
+            background: #fffdf8;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .preview-table tr:hover {
+            background: #fff9e7;
+        }
+
+        .status-tag {
+            background: #f2dca0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>🛠️ Конструктор таблицы отчета</h2>
-    <p style="font-size: 14px; margin-bottom: 20px;">Выберите поля, которые попадут в таблицу, и добавьте текст «до» и «после», если нужно.</p>
+    <p style="font-size: 14px; margin-bottom: 20px;">Выберите поля, которые попадут в таблицу, и добавьте текст «до» и
+        «после», если нужно.</p>
 
     <table class="config-table" id="constructor-table">
         <thead>
-            <tr>
-                <th>Вкл.</th>
-                <th>Системное поле</th>
-                <th>Текст «До» (Префикс)</th>
-                <th>Текст «После» (Суффикс)</th>
-            </tr>
+        <tr>
+            <th>Вкл.</th>
+            <th>Системное поле</th>
+            <th>Текст «До» (Префикс)</th>
+            <th>Текст «После» (Суффикс)</th>
+        </tr>
         </thead>
         <tbody>
-            <tr data-field="id">
-                <td><input type="checkbox" class="checkbox-custom" checked></td>
-                <td><b>ID Книги</b></td>
-                <td><input type="text" class="input-text prefix" placeholder="№ "></td>
-                <td><input type="text" class="input-text suffix" placeholder=""></td>
-            </tr>
-            <tr data-field="title">
-                <td><input type="checkbox" class="checkbox-custom" checked></td>
-                <td><b>Название</b></td>
-                <td><input type="text" class="input-text prefix" placeholder="Книга: «"></td>
-                <td><input type="text" class="input-text suffix" placeholder="»"></td>
-            </tr>
-            <tr data-field="author">
-                <td><input type="checkbox" class="checkbox-custom" checked></td>
-                <td><b>Автор</b></td>
-                <td><input type="text" class="input-text prefix" placeholder="написал "></td>
-                <td><input type="text" class="input-text suffix" placeholder=""></td>
-            </tr>
-            <tr data-field="genre">
-                <td><input type="checkbox" class="checkbox-custom" checked></td>
-                <td><b>Жанр</b></td>
-                <td><input type="text" class="input-text prefix" placeholder="в стиле "></td>
-                <td><input type="text" class="input-text suffix" placeholder=""></td>
-            </tr>
+        <tr data-field="id">
+            <td><input type="checkbox" class="checkbox-custom" checked></td>
+            <td><b>ID Книги</b></td>
+            <td><input type="text" class="input-text prefix" placeholder="№ "></td>
+            <td><input type="text" class="input-text suffix" placeholder=""></td>
+        </tr>
+        <tr data-field="title">
+            <td><input type="checkbox" class="checkbox-custom" checked></td>
+            <td><b>Название</b></td>
+            <td><input type="text" class="input-text prefix" placeholder="Книга: «"></td>
+            <td><input type="text" class="input-text suffix" placeholder="»"></td>
+        </tr>
+        <tr data-field="author">
+            <td><input type="checkbox" class="checkbox-custom" checked></td>
+            <td><b>Автор</b></td>
+            <td><input type="text" class="input-text prefix" placeholder="написал "></td>
+            <td><input type="text" class="input-text suffix" placeholder=""></td>
+        </tr>
+        <tr data-field="genre">
+            <td><input type="checkbox" class="checkbox-custom" checked></td>
+            <td><b>Жанр</b></td>
+            <td><input type="text" class="input-text prefix" placeholder="в стиле "></td>
+            <td><input type="text" class="input-text suffix" placeholder=""></td>
+        </tr>
         </tbody>
     </table>
 
     <div class="creator-info">
-        <div><label style="font-size: 11px;">Фамилия</label><input type="text" id="ln" class="input-text" placeholder="Старостин"></div>
-        <div><label style="font-size: 11px;">Имя</label><input type="text" id="fn" class="input-text" placeholder="Николай"></div>
-        <div><label style="font-size: 11px;">Отчество</label><input type="text" id="mn" class="input-text" placeholder="Владимирович"></div>
+        <div><label style="font-size: 11px;">Фамилия</label><input type="text" id="ln" class="input-text"
+                                                                   placeholder="Старостин"></div>
+        <div><label style="font-size: 11px;">Имя</label><input type="text" id="fn" class="input-text"
+                                                               placeholder="Николай"></div>
+        <div><label style="font-size: 11px;">Отчество</label><input type="text" id="mn" class="input-text"
+                                                                    placeholder="Владимирович"></div>
     </div>
 
     <button class="btn-generate" onclick="generateReport()">📄 Сформировать и скачать .docx</button>
+
+    <div class="preview-section">
+        <h3>📚 Текущий список книг (база данных)</h3>
+        <table class="preview-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Автор (ID)</th>
+                <th>Жанр (ID)</th>
+            </tr>
+            </thead>
+            <tbody id="books-list-body">
+            <tr>
+                <td colspan="4" style="text-align: center; color: #9a874f;">Загрузка данных...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
+    // 1. Функция загрузки книг при загрузке страницы
+    async function loadBooks() {
+        try {
+            const response = await fetch('/api/book/all');
+            const data = await response.json();
+
+            const tbody = document.getElementById('books-list-body');
+            tbody.innerHTML = ''; // Очищаем заглушку
+
+            // Обратите внимание: в вашем роуте возвращается объект {"books": [...]}
+            if (data.books && data.books.length > 0) {
+                data.books.forEach(book => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><span class="status-tag">${book.id}</span></td>
+                        <td><b>${book.title}</b></td>
+                        <td>${book.author_id || '—'}</td>
+                        <td>${book.genre_id || '—'}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Книг пока нет</td></tr>';
+            }
+        } catch (error) {
+            console.error("Ошибка при получении списка книг:", error);
+            document.getElementById('books-list-body').innerHTML =
+                    '<tr><td colspan="4" style="text-align: center; color: red;">Ошибка загрузки данных</td></tr>';
+        }
+    }
+
+    // Запускаем загрузку сразу
+    document.addEventListener('DOMContentLoaded', loadBooks);
+
+    // 2. Функция генерации отчета (осталась прежней)
     async function generateReport() {
         const rows = document.querySelectorAll("#constructor-table tbody tr");
         const columns_config = [];
@@ -97,19 +252,25 @@
             config: columns_config
         };
 
-        const response = await fetch('/api/book/report', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        try {
+            const response = await fetch('/api/book/report', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
 
-        if (response.ok) {
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `report_${new Date().toLocaleDateString()}.docx`;
-            a.click();
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `report_${new Date().toLocaleDateString()}.docx`;
+                a.click();
+            } else {
+                alert("Ошибка при создании отчета");
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 </script>
