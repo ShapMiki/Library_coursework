@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление жанром</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #fffdf6, #fff8e6); color: #5c4a1a; min-height: 100vh; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 60px; }
+        .logo { font-size: 22px; font-weight: 600; color: #b8891e; text-decoration: none; }
+        main { display: flex; justify-content: center; align-items: center; padding: 40px; }
+        .form-card { width: 400px; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .form-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #b8891e; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 8px; font-weight: 500; color: #9a874f; text-transform: uppercase; }
+        .form-group input {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #f2dca0; font-size: 14px; transition: 0.2s;
+            outline: none; background: #fffcf5;
+        }
+        .form-group input:focus { border-color: #f2c94c; box-shadow: 0 0 6px rgba(240,180,40,0.2); }
+
+        .actions { display: flex; flex-direction: column; gap: 10px; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-save { background: #f2c94c; color: #5c4a1a; }
+        .btn-save:hover { background: #f0b428; }
+        .btn-delete { background: #fff5f5; color: #cc3333; border: 1px solid #ffcccc; display: none; }
+        .btn-delete:hover { background: #fee2e2; }
+        .back-link { color: #b8891e; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">📚 Library Registry</a>
+    <a href="/page/genres" class="back-link">← К списку жанров</a>
+</header>
+
+<main>
+    <div class="form-card">
+        <div id="formTitle" class="form-title">Добавить жанр</div>
+        <form id="genreForm">
+            <div class="form-group">
+                <label>Название жанра</label>
+                <input type="text" id="genreName" placeholder="Например: Фантастика" required>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn-save">💾 Сохранить</button>
+                <button type="button" id="deleteBtn" class="btn-delete">🗑️ Удалить жанр</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    const genreForm = document.getElementById("genreForm");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const formTitle = document.getElementById("formTitle");
+    const nameInput = document.getElementById("genreName");
+
+    // Получаем ID из URL (например, /page/genre/form/5)
+    const pathParts = window.location.pathname.split('/');
+    const genreId = pathParts[pathParts.length - 1];
+    const isEdit = genreId && !isNaN(genreId);
+
+    // Инициализация
+    async function init() {
+        if (isEdit) {
+            formTitle.innerText = `Редактировать жанр #${genreId}`;
+            deleteBtn.style.display = "block";
+
+            // Загружаем текущие данные жанра
+            try {
+                const res = await fetch(`/api/genre/${genreId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    nameInput.value = data.name;
+                }
+            } catch (err) { console.error("Ошибка загрузки:", err); }
+        }
+    }
+
+    init();
+
+    // Сохранение
+    genreForm.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const payload = {
+            name: nameInput.value.trim()
+        };
+
+        // Если твоя API для жанров работает так же, как для книг (через /edit и массив):
+        const url = isEdit ? `/api/genre/edit` : `/api/genre/`;
+        if (isEdit) {
+            // Обертка в массив, если бэкенд ждет "genre_data" (по аналогии с book_data)
+            const editPayload = {
+                genre_data: [{ id: parseInt(genreId), ...payload }]
+            };
+
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editPayload)
+            });
+
+            if (res.ok) window.location.href = "/page/genres";
+            else alert("Ошибка при обновлении");
+        } else {
+            // Создание нового
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) window.location.href = "/page/genres";
+            else alert("Ошибка при создании");
+        }
+    };
+
+    // Удаление
+    deleteBtn.onclick = async () => {
+        if (!confirm("Удалить этот жанр? Это может повлиять на связанные книги!")) return;
+
+        const res = await fetch(`/api/genre/${genreId}`, { method: "DELETE" });
+        if (res.ok) {
+            alert("Жанр удален");
+            window.location.href = "/page/genres";
+        } else {
+            alert("Не удалось удалить жанр");
+        }
+    };
+</script>
+</body>
+</html>

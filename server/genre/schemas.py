@@ -6,3 +6,6 @@ from config import settings
 
 class SGenre(BaseModel):
     name: str
+
+class SGenreEdit(BaseModel):
+    genre_data: list

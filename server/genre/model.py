@@ -11,3 +11,9 @@ class Genre(Base):
     name: Mapped[str] = mapped_column(String(80), unique=True)
 
     books = relationship("Book", back_populates="genre")
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "books": self.books,
+        }

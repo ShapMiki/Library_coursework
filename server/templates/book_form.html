@@ -15,10 +15,14 @@
         .form-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #b8891e; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 14px; margin-bottom: 6px; font-weight: 500; }
-        .form-group input, .form-group textarea {
+
+        .form-group input, .form-group textarea, .form-group select {
             width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #f2dca0; font-size: 14px; transition: 0.2s;
+            background: white; outline: none; color: #5c4a1a;
         }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #f2c94c; box-shadow: 0 0 6px rgba(240,180,40,0.2); }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #f2c94c; box-shadow: 0 0 6px rgba(240,180,40,0.2);
+        }
 
         .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
         button { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; }
@@ -28,6 +32,7 @@
 
         .btn-delete {
             background: #fff5f5; color: #cc3333; border: 1px solid #ffcccc;
+            display: none;
         }
         .btn-delete:hover { background: #fee2e2; }
     </style>
@@ -54,20 +59,22 @@
             </div>
 
             <div class="form-group">
-                <label>ID автора</label>
-                <input type="number" name="author_id" id="author_id">
+                <label>Автор</label>
+                <select name="author_id" id="author_id">
+                    <option value="">Загрузка...</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <label>ID жанра</label>
-                <input type="number" name="genre_id" id="genre_id">
+                <label>Жанр</label>
+                <select name="genre_id" id="genre_id">
+                    <option value="">Загрузка...</option>
+                </select>
             </div>
 
             <div class="actions">
                 <button type="submit" class="btn-save">Сохранить</button>
-
             </div>
-<button type="button" id="deleteBtn" class="btn-delete">Удалить книгу</button>
         </form>
     </div>
 </main>
@@ -77,38 +84,76 @@
     const deleteBtn = document.getElementById("deleteBtn");
     const formTitle = document.getElementById("formTitle");
 
-    // Определяем ID книги из URL (например, /page/book/form/123)
     const pathParts = window.location.pathname.split('/');
     const bookId = pathParts[pathParts.length - 1];
     const isEdit = bookId && !isNaN(bookId);
 
-    // Если это редактирование, меняем интерфейс
-    if (isEdit) {
-        formTitle.innerText = "Редактировать книгу";
-        deleteBtn.style.display = "block";
-        // Здесь можно добавить fetch, чтобы предзаполнить поля данными книги
+    // Загрузка авторов (в value кладем ID)
+    async function loadAuthors() {
+        const select = document.getElementById("author_id");
+        try {
+            const response = await fetch('/api/author/all');
+            const authors = await response.json();
+            select.innerHTML = '<option value="">Выберите автора...</option>';
+            authors.forEach(a => {
+                const opt = document.createElement("option");
+                opt.value = a.id; // Здесь ID (например, 35)
+                opt.textContent = a.name;
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            select.innerHTML = '<option value="">Ошибка загрузки</option>';
+        }
     }
 
-    // Сохранение (Создание или Обновление)
+    // Загрузка жанров (в value кладем ID)
+    async function loadGenres() {
+        const select = document.getElementById("genre_id");
+        try {
+            const response = await fetch('/api/genre/all');
+            const genres = await response.json();
+            select.innerHTML = '<option value="">Выберите жанр...</option>';
+            genres.forEach(g => {
+                const opt = document.createElement("option");
+                opt.value = g.id; // Здесь ID (например, 36)
+                opt.textContent = g.name;
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            select.innerHTML = '<option value="">Ошибка загрузки</option>';
+        }
+    }
+
+    async function init() {
+        await Promise.all([loadAuthors(), loadGenres()]);
+        if (isEdit) {
+            formTitle.innerText = "Редактировать книгу";
+            if (deleteBtn) deleteBtn.style.display = "block";
+            // В режиме редактирования можно добавить fetch для предзаполнения
+        }
+    }
+
+    init();
+
     bookForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(bookForm);
+
+        // ВАЖНО: берем значения как есть, они будут строками (String)
         const payload = {
             title: formData.get("title"),
             description: formData.get("description"),
-            author_id: parseInt(formData.get("author_id")) || null,
-            genre_id: parseInt(formData.get("genre_id")) || null
+            author_id: formData.get("author_id"),
+            genre_id: formData.get("genre_id")
         };
 
-        // Если редактируем, отправляем на эндпоинт редактирования (или метод PUT/PATCH)
-        // Если создаем — на обычный POST
         const url = isEdit ? `/api/book/edit` : `/api/book/`;
-        const method = "POST"; // В твоем route.py для edit стоит @router.post("/edit")
 
-        if (isEdit) payload.id = parseInt(bookId);
+        // ID книги для редактирования тоже превращаем в строку на всякий случай
+        if (isEdit) payload.id = String(bookId);
 
         const response = await fetch(url, {
-            method: method,
+            method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(isEdit ? { book_data: [payload] } : payload)
         });
@@ -120,21 +165,13 @@
         }
     });
 
-    // Удаление
-    deleteBtn.addEventListener("click", async () => {
-        if (!confirm("Вы точно хотите удалить эту книгу?")) return;
-
-        const response = await fetch(`/api/book/${bookId}`, {
-            method: "DELETE"
+    if (deleteBtn) {
+        deleteBtn.addEventListener("click", async () => {
+            if (!confirm("Удалить книгу?")) return;
+            const response = await fetch(`/api/book/${bookId}`, { method: "DELETE" });
+            if (response.ok) window.location.href = "/";
         });
-
-        if (response.ok) {
-            alert("Книга удалена");
-            window.location.href = "/";
-        } else {
-            alert("Не удалось удалить книгу");
-        }
-    });
+    }
 </script>
 
 </body>

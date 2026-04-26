@@ -50,6 +50,16 @@
                 <label>Поиск по названию</label>
                 <input type="text" name="title" placeholder="Начните печатать...">
             </div>
+
+            <div class="filter-group">
+                <label>Сортировка</label>
+                <select name="order" id="sort-order">
+                    <option value="asc">А – Я (По возрастанию)</option>
+                    <option value="desc">Я – А (По убыванию)</option>
+                </select>
+                <input type="hidden" name="sort_by" value="title">
+            </div>
+
             <button type="submit" class="btn-submit">Найти</button>
         </form>
     </section>
@@ -60,6 +70,7 @@
     async function fetchBooks() {
         const params = new URLSearchParams(new FormData(document.getElementById('filter-form')));
         try {
+            // Параметры order и sort_by автоматически добавятся в URL
             const response = await fetch(`/api/book/all?${params.toString()}`);
             const data = await response.json();
             renderBooks(data.books);
@@ -80,7 +91,18 @@
         `).join('');
     }
 
-    document.getElementById('filter-form').onsubmit = (e) => { e.preventDefault(); fetchBooks(); };
+    // Обработка отправки формы
+    document.getElementById('filter-form').onsubmit = (e) => {
+        e.preventDefault();
+        fetchBooks();
+    };
+
+    // Автоматический поиск при смене сортировки
+    document.getElementById('sort-order').onchange = () => {
+        fetchBooks();
+    };
+
+    // Первичная загрузка данных
     fetchBooks();
 </script>
 </body>

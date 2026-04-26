@@ -104,7 +104,7 @@
 
     <div class="genre-grid" id="genre-grid">
         {% for genre in data.genres %}
-        <a href="/page/genre/form/{{ genre.id }}" class="genre-card">
+        <a href="/page/genre/edit/{{genre.id}}" class="genre-card">
             <span class="genre-icon">🏷️</span>
             <div class="genre-name">{{ genre.name }}</div>
         </a>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление автором</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #fffdf6, #fff8e6); color: #5c4a1a; min-height: 100vh; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 60px; }
+        .logo { font-size: 22px; font-weight: 600; color: #b8891e; text-decoration: none; }
+        main { display: flex; justify-content: center; align-items: center; padding: 40px; }
+        .form-card { width: 400px; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .form-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #b8891e; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 8px; font-weight: 500; color: #9a874f; text-transform: uppercase; }
+        .form-group input {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #f2dca0; font-size: 14px; transition: 0.2s;
+            outline: none; background: #fffcf5;
+        }
+        .form-group input:focus { border-color: #f2c94c; box-shadow: 0 0 6px rgba(240,180,40,0.2); }
+
+        .actions { display: flex; flex-direction: column; gap: 10px; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-save { background: #f2c94c; color: #5c4a1a; }
+        .btn-save:hover { background: #f0b428; }
+        .btn-delete { background: #fff5f5; color: #cc3333; border: 1px solid #ffcccc; display: none; }
+        .btn-delete:hover { background: #fee2e2; }
+        .back-link { color: #b8891e; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">📚 Library Registry</a>
+    <a href="/authors" class="back-link">← К списку авторов</a>
+</header>
+
+<main>
+    <div class="form-card">
+        <div id="formTitle" class="form-title">Добавить автора</div>
+        <form id="authorForm">
+            <div class="form-group">
+                <label>ФИО Автора</label>
+                <input type="text" id="authorName" placeholder="Введите имя автора" required>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn-save">💾 Сохранить</button>
+                <button type="button" id="deleteBtn" class="btn-delete">🗑️ Удалить автора</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    const authorForm = document.getElementById("authorForm");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const formTitle = document.getElementById("formTitle");
+    const nameInput = document.getElementById("authorName");
+
+    const pathParts = window.location.pathname.split('/');
+    const authorId = pathParts[pathParts.length - 1];
+    const isEdit = authorId && !isNaN(authorId);
+
+    async function init() {
+        if (isEdit) {
+            formTitle.innerText = `Редактировать автора #${authorId}`;
+            deleteBtn.style.display = "block";
+
+            try {
+                const res = await fetch(`/api/author/${authorId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    nameInput.value = data.name;
+                }
+            } catch (err) { console.error("Ошибка загрузки:", err); }
+        }
+    }
+
+    init();
+
+    authorForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const payload = { name: nameInput.value.trim() };
+        const url = isEdit ? `/api/author/edit` : `/api/author/`;
+
+        if (isEdit) {
+            const editPayload = { author_data: [{ id: parseInt(authorId), ...payload }] };
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editPayload)
+            });
+            if (res.ok) window.location.href = "/authors";
+            else alert("Ошибка обновления");
+        } else {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) window.location.href = "/authors";
+            else alert("Ошибка создания");
+        }
+    };
+
+    deleteBtn.onclick = async () => {
+        if (!confirm("Удалить автора? Это отвяжет все его книги!")) return;
+        const res = await fetch(`/api/author/${authorId}`, { method: "DELETE" });
+        if (res.ok) window.location.href = "/authors";
+    };
+</script>
+</body>
+</html>

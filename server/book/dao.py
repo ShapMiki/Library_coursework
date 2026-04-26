@@ -14,11 +14,41 @@ class BookDAO(BaseDAO):
     @classmethod
     async def add_one(cls, book_data):
         async with async_session_maker() as session:
-            orm_book = Book(**book_data.dict())
+            # Превращаем Pydantic-модель в словарь, если пришла она
+            if hasattr(book_data, "dict"):
+                data = book_data.dict()
+            else:
+                data = book_data
+
+            # Подготавливаем данные (приведение типов как в update_one)
+            author_id = data.get("author_id")
+            genre_id = data.get("genre_id")
+
+            # Создаем объект ORM
+            orm_book = Book(
+                title=data.get("title"),
+                description=data.get("description"),
+                # Явно приводим к int, если значение передано
+                author_id=int(author_id) if author_id else None,
+                genre_id=int(genre_id) if genre_id else None,
+                extra_data=data.get("extra_data", {})
+            )
+
             session.add(orm_book)
             await session.commit()
-            await session.refresh(orm_book)
-            return orm_book
+
+            # Чтобы вернуть "полный" объект с именами автора и жанра,
+            # делаем refresh с подгрузкой отношений
+            query = (
+                select(cls.model)
+                .filter_by(id=orm_book.id)
+                .options(
+                    selectinload(cls.model.author),
+                    selectinload(cls.model.genre)
+                )
+            )
+            result = await session.execute(query)
+            return result.scalar_one()
 
     @classmethod
     async def find_all_full(cls):

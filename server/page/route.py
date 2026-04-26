@@ -111,3 +111,31 @@ async def menu(request: Request):
 @router.get("/report")
 async def menu(request: Request):
     return templates.TemplateResponse("report_form.html", {"request": request})
+
+@router.get("/genre/edit/{genre_id}")
+async def genre_edit_page(genre_id: int, request: Request, user=Depends(get_current_user)):
+    genre = await GenreDAO.find_by_id(genre_id)
+
+    return templates.TemplateResponse(
+        "genre_edit_form.html",
+        {
+            "request": request,
+            "data": {
+                "genre": genre
+            }
+        }
+    )
+
+@router.get("/author/{author_id}")
+async def author_edit_page(author_id: int, request: Request, user=Depends(get_current_user)):
+    author = await AuthorDAO.find_by_id(author_id)
+
+    return templates.TemplateResponse(
+        "author_edit_form.html",
+        {
+            "request": request,
+            "data": {
+                "author": author
+            }
+        }
+    )
